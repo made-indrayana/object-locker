@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "discord.js": "^12.5.3",
-    "nodemon": "^2.0.9"
+    "discord.js": "^12.5.3"
   }
 }
