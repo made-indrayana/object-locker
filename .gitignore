@@ -1,6 +1,9 @@
 # Bot config
 config.json
 
+# Bot database
+database.sqlite
+
 # Logs
 logs
 *.log
