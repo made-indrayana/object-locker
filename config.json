@@ -1,0 +1,6 @@
+{
+  "token": "Your Discord bot token",
+  "prefix": "!",
+  "dbUsername": "yourDatabaseUsername",
+  "dbPassword": "yourDatabasePassword"
+}
