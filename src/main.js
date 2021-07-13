@@ -78,7 +78,7 @@ client.on("message", async (message) => {
       message.channel.send("Too many arguments, please only use one argument.");
 
     } else if (command === "lockstatus" && input[0] === undefined) {
-      const results = await Entry.findAll({where: {channelName: message.channel.name}});
+      const results = await Entry.findAll({where: {serverName: message.guild.name, channelName: message.channel.name}});
       let strings = new Array();
       results.forEach((entry) =>
         strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``)
