@@ -15,10 +15,10 @@ const sequelize = new Sequelize(
 class Entry extends Model {}
 Entry.init(
   {
-    serverName: { type: DataTypes.STRING, allowNull: false },
-    channelName: { type: DataTypes.STRING, allowNull: false },
-    userID: { type: DataTypes.INTEGER, allowNull: false },
-    lockedObject: { type: DataTypes.STRING, allowNull: false, unique: true },
+    serverID: { type: DataTypes.STRING, allowNull: false },
+    channelID: { type: DataTypes.STRING, allowNull: false },
+    userID: { type: DataTypes.STRING, allowNull: false },
+    lockedObject: { type: DataTypes.STRING, allowNull: false },
   },
   {
     sequelize,
@@ -29,33 +29,24 @@ Entry.init(
 async function ValidateDatabase(database) {
   try {
     await sequelize.authenticate(database);
-    await database.sync();
+    await database.sync({force:true});
     console.log("Connection has been established successfully.");
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error("Unable to connect to the database: ", error);
   }
 }
 
-async function CreateEntry(serverName, channelName, userID, objectName) {
+async function CreateEntry(serverID, channelID, userID, objectName) {
   try {
     await Entry.create({
-      serverName: serverName,
-      channelName: channelName,
+      serverID: serverID,
+      channelID: channelID,
       userID: userID,
       lockedObject: objectName,
     });
   } catch (error) {
     console.error("Unable to create entry: ", error);
   }
-}
-
-async function ClearAllMessagesByCloning(channel) {
-  channel.send("Trying to delete...");
-  // Clone channel
-  await channel.clone();
-
-  // Delete old channel
-  channel.delete();
 }
 
 client.on("ready", () => {
@@ -78,7 +69,7 @@ client.on("message", async (message) => {
       message.channel.send("Too many arguments, please only use one argument.");
 
     } else if (command === "lockstatus" && input[0] === undefined) {
-      const results = await Entry.findAll({where: {serverName: message.guild.name, channelName: message.channel.name}});
+      const results = await Entry.findAll({where: {serverID: message.guild.id, channelID: message.channel.id}});
       let strings = new Array();
       results.forEach((entry) =>
         strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``)
@@ -92,10 +83,10 @@ client.on("message", async (message) => {
       message.channel.send(embed);
 
     } else if (command === "lockstatus" && input[0] === "all"){
-      const results = await Entry.findAll({where: {serverName: message.guild.name}});
+      const results = await Entry.findAll({where: {serverID: message.guild.id}});
       let strings = new Array();
       results.forEach((entry) =>
-        strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\` in #${entry.channelName}`)
+        strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\` in <#${entry.channelID}>`)
       );
 
       if (strings[0] == null) strings = "No object is currently locked.";
@@ -108,23 +99,17 @@ client.on("message", async (message) => {
     
      }else if (command === "lock") {
       message.channel.send("Locking Object " + `\`${input[0]}\``);
-      CreateEntry(message.guild.name, message.channel.name, message.author.id, input[0]);
+      CreateEntry(message.guild.id, message.channel.id, message.author.id, input[0]);
+    
 
     } else if (command === "unlock") {
-      const result = await Entry.findOne({ where: { lockedObject: input[0] } });
+      const result = await Entry.findOne({ where: { serverID: message.guild.id, channelID: message.channel.id, lockedObject: input[0] } });
       if (result != null) {
         const delEntry = await Entry.destroy({
           where: { lockedObject: input[0] },
         });
         message.channel.send("Unlocking Object " + `\`${input[0]}\``);
       } else message.channel.send("Object not locked!");
-
-    } else if (command === "cls") {
-      ClearAllMessagesByCloning(message.channel);
-
-    } else if (command === "clear"){
-      message.channel.messages.fetch({limit:100}).then((messages) => message.channel.bulkDelete(messages))
-    }
   }
 });
 
