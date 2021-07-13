@@ -16,7 +16,8 @@ class Entry extends Model {}
 Entry.init(
   {
     serverName: { type: DataTypes.STRING, allowNull: false },
-    userName: { type: DataTypes.STRING, allowNull: false },
+    channelName: { type: DataTypes.STRING, allowNull: false },
+    userID: { type: DataTypes.INTEGER, allowNull: false },
     lockedObject: { type: DataTypes.STRING, allowNull: false, unique: true },
   },
   {
@@ -35,11 +36,12 @@ async function ValidateDatabase(database) {
   }
 }
 
-async function CreateEntry(serverName, userName, objectName) {
+async function CreateEntry(serverName, channelName, userID, objectName) {
   try {
     await Entry.create({
       serverName: serverName,
-      userName: userName,
+      channelName: channelName,
+      userID: userID,
       lockedObject: objectName,
     });
   } catch (error) {
@@ -68,27 +70,46 @@ client.on("message", async (message) => {
     const rawInput = message.content.slice(1, message.content.length);
     const input = rawInput.split(" ");
     const command = input.shift(); // removes the first item in an array and returns that item
-    const commandArgs = input.join(" ");
+    //const commandArgs = input.join(" ");
 
     console.log(input.length);
 
     if (input.length > 1) {
       message.channel.send("Too many arguments, please only use one argument.");
-    } else if (command === "lockstatus") {
-      const results = await Entry.findAll();
+
+    } else if (command === "lockstatus" && input[0] === undefined) {
+      const results = await Entry.findAll({where: {channelName: message.channel.name}});
       let strings = new Array();
       results.forEach((entry) =>
-        strings.push(`@${entry.userName} is locking \`${entry.lockedObject}\``)
+        strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``)
       );
+
       if (strings[0] == null) strings = "No object is currently locked.";
       const embed = new Discord.MessageEmbed()
         .setTitle("Locked Object")
         .setColor("2f4c90")
         .setDescription(strings);
       message.channel.send(embed);
-    } else if (command === "lock") {
+
+    } else if (command === "lockstatus" && input[0] === "all"){
+      const results = await Entry.findAll({where: {serverName: message.guild.name}});
+      let strings = new Array();
+      results.forEach((entry) =>
+        strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\` in #${entry.channelName}`)
+      );
+
+      if (strings[0] == null) strings = "No object is currently locked.";
+      const embed = new Discord.MessageEmbed()
+        .setTitle("Locked Object")
+        .setColor("2f4c90")
+        .setDescription(strings);
+      message.channel.send(embed);
+    
+    
+     }else if (command === "lock") {
       message.channel.send("Locking Object " + `\`${input[0]}\``);
-      CreateEntry(message.guild.name, message.author.username, input[0]);
+      CreateEntry(message.guild.name, message.channel.name, message.author.id, input[0]);
+
     } else if (command === "unlock") {
       const result = await Entry.findOne({ where: { lockedObject: input[0] } });
       if (result != null) {
