@@ -6,9 +6,6 @@ const config = require("../config.json");
 const prefix = config.prefix;
 
 const sequelize = new Sequelize(
-  "botDatabase",
-  config.dbUsername,
-  config.dbPassword,
   {
     dialect: "sqlite",
     storage: "database.sqlite",
