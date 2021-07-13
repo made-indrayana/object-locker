@@ -49,7 +49,7 @@ async function CreateEntry(serverName, channelName, userID, objectName) {
   }
 }
 
-async function clearAllMessagesByCloning(channel) {
+async function ClearAllMessagesByCloning(channel) {
   channel.send("Trying to delete...");
   // Clone channel
   await channel.clone();
@@ -118,15 +118,12 @@ client.on("message", async (message) => {
         });
         message.channel.send("Unlocking Object " + `\`${input[0]}\``);
       } else message.channel.send("Object not locked!");
-    } else if (command === "checkdb") {
-      try {
-        await sequelize.authenticate();
-        console.log("Connection has been established successfully.");
-      } catch (error) {
-        console.error("Unable to connect to the database:", error);
-      }
+
     } else if (command === "cls") {
-      clearAllMessagesByCloning(message.channel);
+      ClearAllMessagesByCloning(message.channel);
+
+    } else if (command === "clear"){
+      message.channel.messages.fetch({limit:100}).then((messages) => message.channel.bulkDelete(messages))
     }
   }
 });
