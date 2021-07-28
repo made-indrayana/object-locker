@@ -66,9 +66,6 @@ client.on('message', async (message) => {
 		const input = rawInput.split(' ');
 		// removes the first item in an array and returns that item
 		const command = input.shift();
-		// const commandArgs = input.join(' ');
-
-		console.log(input.length);
 
 		if (input.length > 1) {
 			message.channel.send('Too many arguments, please only use one argument.');
@@ -106,18 +103,17 @@ client.on('message', async (message) => {
 
 		}
 		else if (command === 'lock') {
-			message.channel.send('Locking Object ' + `\`${input[0]}\``);
 			CreateEntry(message.guild.id, message.channel.id, message.author.id, input[0]);
-
-
+			message.channel.send(`\`${input[0]}\` is now locked!`);
 		}
+
 		else if (command === 'unlock') {
 			const result = await Entry.findOne({ where: { serverID: message.guild.id, channelID: message.channel.id, lockedObject: input[0] } });
 			if (result != null) {
 				const delEntry = await Entry.destroy({
 					where: { lockedObject: input[0] },
 				});
-				message.channel.send('Unlocking Object ' + `\`${input[0]}\``);
+				message.channel.send(`\`${input[0]}\` is now unlocked!`);
 			}
 			else {
 				message.channel.send('Object not locked!');
