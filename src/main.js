@@ -1,5 +1,15 @@
+const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('src/commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	// set a new item in the Collection
+	// with the key as the command name and the value as the exported module
+	client.commands.set(command.name, command);
+}
 
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 const config = require('../config.json');
@@ -58,67 +68,28 @@ client.on('ready', () => {
 ValidateDatabase(sequelize);
 
 client.on('message', async (message) => {
-	if (!message.content.startsWith(prefix) || message.author.bot) {
+	if (!message.content.startsWith(prefix) || message.author.bot)
 		return;
-	}
+
 	else if (message.content.startsWith(prefix)) {
 		const rawInput = message.content.slice(1, message.content.length);
 		const input = rawInput.split(' ');
 		// removes the first item in an array and returns that item
-		const command = input.shift();
+		const commandName = input.shift().toLowerCase();
 
-		if (input.length > 1) {
+		if (!client.commands.has(commandName)) return;
+
+		try {
+			client.commands.get(commandName).execute(message, input);
+		}
+		catch (error) {
+			console.error(error);
+			message.reply('there was an error trying to execute that command!');
+		}
+
+		if (input.length > 1)
 			message.channel.send('Too many arguments, please only use one argument.');
 
-		}
-		else if (command === 'lockstatus' && input[0] === undefined) {
-			const results = await Entry.findAll({ where: { serverID: message.guild.id, channelID: message.channel.id } });
-			let strings = new Array();
-			results.forEach((entry) =>
-				strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``),
-			);
-
-			if (strings[0] == null) strings = 'No object is currently locked.';
-			const embed = new Discord.MessageEmbed()
-				.setTitle('Locked Object')
-				.setColor('2f4c90')
-				.setDescription(strings);
-			message.channel.send(embed);
-
-		}
-		else if (command === 'lockstatus' && input[0] === 'all') {
-			const results = await Entry.findAll({ where: { serverID: message.guild.id } });
-			let strings = new Array();
-			results.forEach((entry) =>
-				strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\` in <#${entry.channelID}>`),
-			);
-
-			if (strings[0] == null) strings = 'No object is currently locked.';
-			const embed = new Discord.MessageEmbed()
-				.setTitle('Locked Object')
-				.setColor('2f4c90')
-				.setDescription(strings);
-			message.channel.send(embed);
-
-
-		}
-		else if (command === 'lock') {
-			CreateEntry(message.guild.id, message.channel.id, message.author.id, input[0]);
-			message.channel.send(`\`${input[0]}\` is now locked!`);
-		}
-
-		else if (command === 'unlock') {
-			const result = await Entry.findOne({ where: { serverID: message.guild.id, channelID: message.channel.id, lockedObject: input[0] } });
-			if (result != null) {
-				const delEntry = await Entry.destroy({
-					where: { lockedObject: input[0] },
-				});
-				message.channel.send(`\`${input[0]}\` is now unlocked!`);
-			}
-			else {
-				message.channel.send('Object not locked!');
-			}
-		}
 	}
 });
 
