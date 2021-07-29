@@ -3,6 +3,7 @@ const token = require('../token.json');
 const config = require('../config.json');
 const prefix = config.prefix;
 const database = require('./database');
+const embed = require('./utilities/embed');
 
 // Discord
 const Discord = require('discord.js');
@@ -38,8 +39,14 @@ client.on('message', async (message) => {
         if (!client.commands.has(commandName))
             return;
 
-        if (client.commands.get(commandName).args && !args.length)
-            return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
+        const command = client.commands.get(commandName);
+        if (command.args && !args.length) {
+            let reply = `You didn't provide any arguments, ${message.author}!`;
+            if(client.commands.get(commandName).usage)
+                reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+            message.channel.send(embed.create('Oops...', reply, 'warning'));
+            return;
+        }
 
         if (args.length > 1) {
             message.channel.send('Too many arguments, please use only one argument.');

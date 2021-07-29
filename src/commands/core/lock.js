@@ -4,6 +4,7 @@ const embed = require('../../utilities/embed');
 module.exports = {
     name: 'lock',
     args: true,
+    usage: 'objectNameToLock',
     description: 'Lock Object.',
     async execute(message, args) {
         const result = await database.Entry.findOne({
@@ -15,7 +16,7 @@ module.exports = {
         });
 
         if (result != null)
-            message.channel.send(`\`${args[0]}\` is already locked!`);
+            message.channel.send(embed.create('Oops...', `\`${args[0]}\` is already locked!`, 'error'));
 
         else if(result === null) {
             database.createEntry(

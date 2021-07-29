@@ -4,6 +4,7 @@ const embed = require('../../utilities/embed');
 module.exports = {
     name: 'unlock',
     args: true,
+    usage: 'objectNameToUnlock',
     description: 'Unlock Object.',
     async execute(message, args) {
         const result = await database.Entry.findOne({
@@ -19,7 +20,7 @@ module.exports = {
             message.channel.send(embed.create('Unlocked!', `\`${args[0]}\` is now unlocked!`));
         }
         else
-            message.channel.send(embed.create('Error', `\`${args[0]}\` not locked!`, 'error'));
+            message.channel.send(embed.create('Oops...', `\`${args[0]}\` not locked!`, 'error'));
 
     },
 };
