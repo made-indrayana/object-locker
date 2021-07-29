@@ -1,44 +1,49 @@
-const Discord = require('discord.js');
 const database = require('../../database');
+const embed = require('../../utilities/embed');
 
 module.exports = {
-	name: 'lockstatus',
-	args: false,
-	description: 'Show lock status on the channel/server.',
-	async execute(message, args) {
-		if (args[0] === undefined) {
-			const results = await database.Entry.findAll({
-				where: { serverID: message.guild.id, channelID: message.channel.id },
-			});
-			let strings = new Array();
-			results.forEach((entry) =>
-				strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``),
-			);
+    name: 'lockstatus',
+    args: false,
+    description: 'Show lock status on the channel/server.',
+    async execute(message, args) {
+        if (args[0] === undefined) {
+            let embedTitle = 'Locked Object';
+            const results = await database.Entry.findAll({
+                where: { serverID: message.guild.id, channelID: message.channel.id },
+            });
 
-			if (strings[0] == null) strings = 'No object is currently locked.';
-			const embed = new Discord.MessageEmbed()
-				.setTitle('Locked Object')
-				.setColor('2f4c90')
-				.setDescription(strings);
-			message.channel.send(embed);
-		}
-		else if (args[0] === 'all') {
-			const results = await database.Entry.findAll({
-				where: { serverID: message.guild.id },
-			});
-			let strings = new Array();
-			results.forEach((entry) =>
-				strings.push(
-					`<@${entry.userID}> is locking \`${entry.lockedObject}\` in <#${entry.channelID}>`,
-				),
-			);
+            let strings = new Array();
+            if (results.length != 0) {
+                results.forEach((entry) =>
+                    strings.push(`<@${entry.userID}> is locking \`${entry.lockedObject}\``),
+                );
+            }
 
-			if (strings[0] == null) strings = 'No object is currently locked.';
-			const embed = new Discord.MessageEmbed()
-				.setTitle('Locked Object')
-				.setColor('2f4c90')
-				.setDescription(strings);
-			message.channel.send(embed);
-		}
-	},
+            if (results.length === 0)
+                strings = 'No object is currently locked.';
+            if (results.length > 1)
+                embedTitle += 's';
+            message.channel.send(embed.create(embedTitle, strings));
+        }
+        else if (args[0] === 'all') {
+            let embedTitle = 'Locked Object';
+            const results = await database.Entry.findAll({
+                where: { serverID: message.guild.id },
+            });
+            let strings = new Array();
+            if (results.length != 0) {
+                results.forEach((entry) =>
+                    strings.push(
+                        `<@${entry.userID}> is locking \`${entry.lockedObject}\` in <#${entry.channelID}>`,
+                    ),
+                );
+            }
+
+            if (results.length === 0)
+                strings = 'No object is currently locked.';
+            if (results.length > 1)
+                embedTitle += 's';
+            message.channel.send(embed.create(embedTitle, strings));
+        }
+    },
 };
