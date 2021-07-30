@@ -3,8 +3,9 @@ const embed = require('../../utilities/embed');
 
 module.exports = {
     name: 'lockstatus',
-    args: false,
     description: 'Show lock status on the channel/server.',
+    args: false,
+    guildOnly: true,
     async execute(message, args) {
         if (args[0] === undefined) {
             let embedTitle = 'Locked Object';

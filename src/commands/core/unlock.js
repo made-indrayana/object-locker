@@ -4,9 +4,10 @@ const embed = require('../../utilities/embed');
 
 module.exports = {
     name: 'unlock',
-    args: true,
-    usage: 'objectNameToUnlock',
     description: 'Unlock Object.',
+    usage: 'objectNameToUnlock',
+    args: true,
+    guildOnly: true,
     async execute(message, args) {
         if (args.length > 1) {
             let reply = 'Too many arguments, please use only one argument.';

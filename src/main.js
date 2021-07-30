@@ -32,19 +32,21 @@ client.on('message', async (message) => {
     else if (message.content.startsWith(prefix)) {
         const rawInput = message.content.slice(1, message.content.length);
         const args = rawInput.split(' ');
-        // removes the first item in an array and returns that item
         const commandName = args.shift().toLowerCase();
 
         if (!client.commands.has(commandName))
             return;
 
         const command = client.commands.get(commandName);
+
+        if (command.guildOnly && message.channel.type === 'dm')
+            return message.reply(embed(errorTitle, 'I can\'t do it in a DM :(\nPlease execute this in a channel.', 'error'));
+
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguments, ${message.author}!`;
             if(client.commands.get(commandName).usage)
                 reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-            message.channel.send(embed(warningTitle, reply, 'warning'));
-            return;
+            return message.channel.send(embed(warningTitle, reply, 'warning'));
         }
 
         try {
