@@ -1,3 +1,4 @@
+const config = require('../../../config.json');
 const database = require('../../database');
 const embed = require('../../utilities/embed');
 
@@ -7,6 +8,13 @@ module.exports = {
     usage: 'objectNameToLock',
     description: 'Lock Object.',
     async execute(message, args) {
+        if (args.length > 1) {
+            let reply = 'Too many arguments, please use only one argument.';
+            reply += `\nThe proper usage would be: \`${config.prefix}${this.name} ${this.usage}\``;
+            message.channel.send(embed.create('Error', reply, 'error'));
+            return;
+        }
+
         const result = await database.Entry.findOne({
             where: {
                 serverID: message.guild.id,
@@ -16,7 +24,7 @@ module.exports = {
         });
 
         if (result != null)
-            message.channel.send(embed.create('Oops...', `\`${args[0]}\` is already locked!`, 'error'));
+            message.channel.send(embed.create('Error', `\`${args[0]}\` is already locked!`, 'error'));
 
         else if(result === null) {
             database.createEntry(

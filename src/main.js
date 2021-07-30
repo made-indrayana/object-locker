@@ -48,11 +48,6 @@ client.on('message', async (message) => {
             return;
         }
 
-        if (args.length > 1) {
-            message.channel.send('Too many arguments, please use only one argument.');
-            return;
-        }
-
         try {
             client.commands.get(commandName).execute(message, args);
         }
