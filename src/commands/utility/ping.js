@@ -1,7 +1,10 @@
+const embed = require('../../utilities/embed');
+
 module.exports = {
-	name: 'ping',
-	description: 'Ping!',
-	execute(message) {
-		message.channel.send('Pong. I\'m alive!');
-	},
+    name: 'ping',
+    args: false,
+    description: 'Ping!',
+    execute(message) {
+        message.channel.send(embed('...Pong!', 'I\'m alive!'));
+    },
 };
