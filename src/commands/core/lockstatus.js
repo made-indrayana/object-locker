@@ -23,7 +23,7 @@ module.exports = {
                 strings = 'No object is currently locked.';
             if (results.length > 1)
                 embedTitle += 's';
-            message.channel.send(embed.create(embedTitle, strings));
+            message.channel.send(embed(embedTitle, strings));
         }
         else if (args[0] === 'all') {
             let embedTitle = 'Locked Object';
@@ -43,7 +43,7 @@ module.exports = {
                 strings = 'No object is currently locked.';
             if (results.length > 1)
                 embedTitle += 's';
-            message.channel.send(embed.create(embedTitle, strings));
+            message.channel.send(embed(embedTitle, strings));
         }
     },
 };

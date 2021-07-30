@@ -5,6 +5,8 @@ function getColor(identifier) {
     switch(identifier) {
     case 'default':
         return config.defaultColor;
+    case 'success':
+        return config.successColor;
     case 'warning':
         return config.warningColor;
     case 'error':
@@ -14,7 +16,7 @@ function getColor(identifier) {
     }
 }
 
-function createEmbedObject(title, content, color = 'default') {
+function embed(title, content, color = 'default') {
     const finalColor = getColor(color);
     const object = new Discord.MessageEmbed()
         .setTitle(title)
@@ -23,4 +25,4 @@ function createEmbedObject(title, content, color = 'default') {
     return object;
 }
 
-module.exports.create = createEmbedObject;
+module.exports = embed;

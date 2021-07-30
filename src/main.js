@@ -1,7 +1,6 @@
 const fs = require('fs');
 const token = require('../token.json');
-const config = require('../config.json');
-const prefix = config.prefix;
+const { prefix, warningTitle, errorTitle } = require('../config.json');
 const database = require('./database');
 const embed = require('./utilities/embed');
 
@@ -44,7 +43,7 @@ client.on('message', async (message) => {
             let reply = `You didn't provide any arguments, ${message.author}!`;
             if(client.commands.get(commandName).usage)
                 reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-            message.channel.send(embed.create('Oops...', reply, 'warning'));
+            message.channel.send(embed(warningTitle, reply, 'warning'));
             return;
         }
 
@@ -53,7 +52,7 @@ client.on('message', async (message) => {
         }
         catch (error) {
             console.error(error);
-            message.reply(`there was an error trying to execute that command!\nError message: \`${error}\``);
+            message.reply(embed(errorTitle, `there was an error trying to execute that command!\nError message: \`${error}\``, 'error'));
         }
     }
 });
