@@ -5,6 +5,7 @@ const embed = require('../../utilities/embed');
 module.exports = {
     name: 'lock',
     description: 'Lock Object.',
+    aliases: ['block'],
     usage: 'objectNameToLock',
     args: true,
     guildOnly: true,
@@ -25,7 +26,7 @@ module.exports = {
         });
 
         if (result != null)
-            message.channel.send(embed(errorTitle, `\`${args[0]}\` is already locked!`, 'error'));
+            message.channel.send(embed(errorTitle, `\`${args[0]}\` is already locked by <@${result.userID}>!`, 'error'));
 
         else if(result === null) {
             database.createEntry(

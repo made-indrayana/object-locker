@@ -5,6 +5,7 @@ const embed = require('../../utilities/embed');
 module.exports = {
     name: 'unlock',
     description: 'Unlock Object.',
+    aliases: ['unblock', 'release'],
     usage: 'objectNameToUnlock',
     args: true,
     guildOnly: true,

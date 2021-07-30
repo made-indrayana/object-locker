@@ -34,23 +34,24 @@ client.on('message', async (message) => {
         const args = rawInput.split(' ');
         const commandName = args.shift().toLowerCase();
 
-        if (!client.commands.has(commandName))
-            return;
+        const command = client.commands.get(commandName)
+        || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-        const command = client.commands.get(commandName);
+        if (!command)
+            return;
 
         if (command.guildOnly && message.channel.type === 'dm')
             return message.reply(embed(errorTitle, 'I can\'t do it in a DM :(\nPlease execute this in a channel.', 'error'));
 
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguments, ${message.author}!`;
-            if(client.commands.get(commandName).usage)
+            if(command.usage)
                 reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
             return message.channel.send(embed(warningTitle, reply, 'warning'));
         }
 
         try {
-            client.commands.get(commandName).execute(message, args);
+            command.execute(message, args);
         }
         catch (error) {
             console.error(error);
