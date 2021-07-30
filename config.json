@@ -1,6 +1,9 @@
 {
   "prefix": "!",
   "defaultColor": "2F4C90",
+  "successColor": "4A943A",
   "errorColor": "B33A3A",
-  "warningColor": "F09030"
+  "warningColor": "F09030",
+  "warningTitle": "Oops :flushed:",
+  "errorTitle": "Error :grimacing:"
 }
