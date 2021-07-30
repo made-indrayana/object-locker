@@ -1,29 +1,33 @@
-const { prefix } = require('../../../config.json');
+const { prefix, helpTitle, defaultColor } = require('../../../config.json');
+const embed = require('../../utilities/embed');
+const Discord = require('discord.js');
+const ignoreCommands = ['cls', 'help', 'ping'];
 
 module.exports = {
     name: 'help',
     description: 'List all of my commands or info about a specific command.',
-    aliases: ['commands'],
+    aliases: ['commands', '!'],
     usage: '[command name]',
     cooldown: 5,
     execute(message, args) {
-        const data = [];
         const { commands } = message.client;
+        const helpEmbed = new Discord.MessageEmbed();
 
         if (!args.length) {
-            data.push('Here\'s a list of all my commands:');
-            data.push(commands.map(command => command.name).join(', '));
-            data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
+            commands.forEach((command) => {
+                if(ignoreCommands.includes(command.name))
+                    return;
+                const commandDesc = [];
+                commandDesc.push(command.description);
+                commandDesc.push(command.usage);
+                helpEmbed.addField(`\`${prefix}${command.name}\``, commandDesc, true);
+            });
 
-            return message.author.send(data, { split: true })
-                .then(() => {
-                    if (message.channel.type === 'dm') return;
-                    message.reply('I\'ve sent you a DM with all my commands!');
-                })
-                .catch(error => {
-                    console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
-                    message.reply('it seems like I can\'t DM you!');
-                });
+            helpEmbed.setTitle(helpTitle);
+            helpEmbed.setDescription('Here\'s a list of what I can help you with:');
+            helpEmbed.setColor(defaultColor);
+            helpEmbed.setFooter(`You can send \`${prefix}help [command name]\` to get info on a specific command!`);
+            return message.channel.send(helpEmbed);
         }
 
         const name = args[0].toLowerCase();
@@ -32,15 +36,14 @@ module.exports = {
         if (!command)
             return message.reply('that\'s not a valid command!');
 
+        helpEmbed.setTitle(helpTitle);
+        helpEmbed.setDescription(
+            `\`${prefix}${command.name}\`
+            Alts: \`${command.aliases}\`
+            ${command.description}
+            Usage: \`${prefix}${command.name} ${command.usage}\``);
+        helpEmbed.setColor(defaultColor);
 
-        data.push(`**Name:** ${command.name}`);
-
-        if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
-        if (command.description) data.push(`**Description:** ${command.description}`);
-        if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
-
-        data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
-
-        message.channel.send(data, { split: true });
+        message.channel.send(helpEmbed);
     },
 };

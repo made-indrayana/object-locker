@@ -5,7 +5,6 @@ module.exports = {
     name: 'lockstatus',
     description: 'Show lock status on the channel/server.',
     aliases: ['status'],
-    args: false,
     guildOnly: true,
     async execute(message, args) {
         if (args[0] === undefined) {
