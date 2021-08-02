@@ -25,6 +25,12 @@ client.on('ready', () => {
     database.validateDatabase(database.instance);
 });
 
+client.on('guildCreate', (guild) => {
+    client.users.fetch(guild.ownerID)
+        .then((user) => user.send(embed('Invite message title.', 'Hello world!')))
+        .catch((err) => console.log(err));
+});
+
 client.on('message', async (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot)
         return;
