@@ -25,9 +25,9 @@ client.on('ready', () => {
     database.validateDatabase(database.instance);
 });
 
-client.on('guildCreate', (guild) => {
+client.on('guildCreate', async (guild) => {
     client.users.fetch(guild.ownerID)
-        .then((user) => user.send(embed('Invite message title.', 'Hello world!')))
+        .then((user) => user.send(embed('Say hello to Object Locker! :yum:', 'WIP Content')))
         .catch((err) => console.log(err));
 });
 
