@@ -1,14 +1,13 @@
 {
-  "name": "scene-locker",
-  "version": "0.0.1",
-  "description": "Scene-Locking Discord Bot for Game Developer",
+  "name": "object-locker",
+  "version": "0.9.1",
+  "description": "Object-Locking Discord Bot for Game Developer, especially those who are using git and doesn't have the 'lock/checkout' function of SVN/Perforce.",
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Made Indrayana",
   "license": "MIT",
-
   "dependencies": {
     "discord.js": "^12.5.3",
     "sequelize": "^6.6.4",
