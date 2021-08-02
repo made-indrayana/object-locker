@@ -1,4 +1,4 @@
-const { prefix, helpTitle, defaultColor } = require('../../../config.json');
+const { prefix, errorTitle, helpTitle, defaultColor } = require('../../../config.json');
 const embed = require('../../utilities/embed');
 const Discord = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping'];
@@ -7,7 +7,7 @@ module.exports = {
     name: 'help',
     description: 'List all of my commands or info about a specific command.',
     aliases: ['commands', '!'],
-    usage: '[command name]',
+    usage: ['[command name]'],
     cooldown: 5,
     execute(message, args) {
         const { commands } = message.client;
@@ -15,18 +15,28 @@ module.exports = {
 
         if (!args.length) {
             commands.forEach((command) => {
-                if(ignoreCommands.includes(command.name))
+                if (ignoreCommands.includes(command.name))
                     return;
+
                 const commandDesc = [];
+
+                if (command.aliases)
+                    commandDesc.push(`Alias: \`${command.aliases}\``);
+
                 commandDesc.push(command.description);
-                commandDesc.push(command.usage);
-                helpEmbed.addField(`\`${prefix}${command.name}\``, commandDesc, true);
+
+                if (command.usage) {
+                    command.usage.forEach((usage) =>
+                        commandDesc.push(`> \`${prefix}${command.name} ${usage}\``),
+                    );
+                }
+                helpEmbed.addField(`\`${prefix}${command.name}\``, commandDesc);
             });
 
             helpEmbed.setTitle(helpTitle);
             helpEmbed.setDescription('Here\'s a list of what I can help you with:');
             helpEmbed.setColor(defaultColor);
-            helpEmbed.setFooter(`You can send \`${prefix}help [command name]\` to get info on a specific command!`);
+            helpEmbed.setFooter(`You can send ${prefix}help [command name] to get info on a specific command!`);
             return message.channel.send(helpEmbed);
         }
 
@@ -34,14 +44,20 @@ module.exports = {
         const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
 
         if (!command)
-            return message.reply('that\'s not a valid command!');
+            return message.reply(embed(errorTitle, 'That\'s not a valid command!', 'error'));
 
+        let description = `\`${prefix}${command.name}\``;
+        if(command.aliases)
+            description += `\nAlias: \`${command.aliases}\``;
+        description += `\n${command.description}`;
+
+        if(command.usage) {
+            command.usage.forEach((usage) =>
+                description += `\n> \`${prefix}${command.name} ${usage}\``,
+            );
+        }
         helpEmbed.setTitle(helpTitle);
-        helpEmbed.setDescription(
-            `\`${prefix}${command.name}\`
-            Alts: \`${command.aliases}\`
-            ${command.description}
-            Usage: \`${prefix}${command.name} ${command.usage}\``);
+        helpEmbed.setDescription(description);
         helpEmbed.setColor(defaultColor);
 
         message.channel.send(helpEmbed);

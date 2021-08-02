@@ -3,8 +3,9 @@ const embed = require('../../utilities/embed');
 
 module.exports = {
     name: 'lockstatus',
-    description: 'Show lock status on the channel/server.',
+    description: 'Show lock status on the channel. It will also show server wide lock status with `server` argument.',
     aliases: ['status'],
+    usage: ['', 'server'],
     guildOnly: true,
     async execute(message, args) {
         if (args[0] === undefined) {
@@ -26,7 +27,7 @@ module.exports = {
                 embedTitle += 's';
             message.channel.send(embed(embedTitle, strings));
         }
-        else if (args[0] === 'all') {
+        else if (args[0] === 'server') {
             let embedTitle = 'Locked Object';
             const results = await database.Entry.findAll({
                 where: { serverID: message.guild.id },

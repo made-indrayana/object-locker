@@ -4,9 +4,9 @@ const embed = require('../../utilities/embed');
 
 module.exports = {
     name: 'lock',
-    description: 'Lock Object.',
+    description: 'Use command to lock object on the channel.',
     aliases: ['block'],
-    usage: 'objectNameToLock',
+    usage: ['objectNameToLock', 'sceneName', 'prefabName'],
     args: true,
     guildOnly: true,
     async execute(message, args) {
