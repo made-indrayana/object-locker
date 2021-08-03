@@ -6,5 +6,6 @@
   "warningColor": "F09030",
   "warningTitle": "Oops :flushed:",
   "errorTitle": "Error :grimacing:",
-  "helpTitle": "Help :nerd:"
+  "helpTitle": "Help :nerd:",
+  "autoDeleteDelay": 10000
 }

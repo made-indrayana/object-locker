@@ -1,4 +1,4 @@
-const { prefix, errorTitle } = require('../../../config.json');
+const { prefix, errorTitle, autoDeleteDelay } = require('../../../config.json');
 const database = require('../../database');
 const embed = require('../../utility/embed');
 
@@ -13,7 +13,8 @@ module.exports = {
         if (args.length > 1) {
             let reply = 'Too many arguments, please use only one argument.';
             reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage}\``;
-            message.channel.send(embed(errorTitle, reply, 'error'));
+            message.channel.send(embed(errorTitle, reply, 'error'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
             return;
         }
 
@@ -27,10 +28,15 @@ module.exports = {
         if (result != null) {
             // eslint-disable-next-line no-unused-vars
             const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[0]);
-            message.channel.send(embed('Unlocked!', `\`${args[0]}\` is now unlocked!`, 'success'));
+            message.channel.send(embed('Unlocked!', `\`${args[0]}\` is now unlocked!`, 'success'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
         }
-        else
-            message.channel.send(embed(errorTitle, `\`${args[0]}\` is not locked!`, 'error'));
+        else {
+            message.channel.send(embed(errorTitle, `\`${args[0]}\` is not locked!`, 'error'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+        }
+
+        message.delete({ timeout: autoDeleteDelay });
 
     },
 };

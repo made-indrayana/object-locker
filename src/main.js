@@ -1,6 +1,6 @@
 const fs = require('fs');
 const token = require('../token.json');
-const { prefix, warningTitle, errorTitle } = require('../config.json');
+const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
 const about = require('./utility/about-text');
 const database = require('./database');
 const embed = require('./utility/embed');
@@ -54,7 +54,9 @@ client.on('message', async (message) => {
             let reply = `You didn't provide any arguments, ${message.author}!`;
             if(command.usage)
                 reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-            return message.channel.send(embed(warningTitle, reply, 'warning'));
+            message.channel.send(embed(warningTitle, reply, 'warning'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            return message.delete({ timeout: autoDeleteDelay });
         }
 
         try {
@@ -62,7 +64,9 @@ client.on('message', async (message) => {
         }
         catch (error) {
             console.error(error);
-            message.reply(embed(errorTitle, `there was an error trying to execute that command!\nError message: \`${error}\``, 'error'));
+            message.reply(embed(errorTitle, `there was an error trying to execute that command!\nError message: \`${error}\``, 'error'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
         }
     }
 });

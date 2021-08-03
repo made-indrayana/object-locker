@@ -1,5 +1,5 @@
 const embed = require('../../utility/embed');
-const { errorTitle } = require('../../../config.json');
+const { errorTitle, autoDeleteDelay } = require('../../../config.json');
 
 module.exports = {
     name: 'cls',
@@ -10,7 +10,9 @@ module.exports = {
             message.reply(embed(errorTitle, 'I can\'t clear DMs! :(', 'error'));
         else if(message.guild.member(message.author).hasPermission('ADMINISTRATOR'))
             message.channel.bulkDelete(100);
-        else
-            message.reply(embed(errorTitle, 'You can\'t clear messages in a channel if you\'re not an Admin!', 'error'));
+        else {
+            message.reply(embed(errorTitle, 'You can\'t clear messages in a channel if you\'re not an Admin!', 'error'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+        }
     },
 };

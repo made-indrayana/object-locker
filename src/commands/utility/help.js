@@ -1,4 +1,4 @@
-const { prefix, errorTitle, helpTitle, defaultColor } = require('../../../config.json');
+const { prefix, errorTitle, helpTitle, defaultColor, autoDeleteDelay } = require('../../../config.json');
 const embed = require('../../utility/embed');
 const Discord = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping'];
@@ -37,14 +37,17 @@ module.exports = {
             helpEmbed.setDescription('Here\'s a list of what I can help you with:');
             helpEmbed.setColor(defaultColor);
             helpEmbed.setFooter(`You can send ${prefix}help [command name] to get info on a specific command!`);
-            return message.channel.send(helpEmbed);
+            return message.channel.send(helpEmbed)
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
         }
 
         const name = args[0].toLowerCase();
         const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
 
-        if (!command)
-            return message.reply(embed(errorTitle, 'That\'s not a valid command!', 'error'));
+        if (!command) {
+            return message.reply(embed(errorTitle, 'That\'s not a valid command!', 'error'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+        }
 
         let description = `\`${prefix}${command.name}\``;
         if(command.aliases)
@@ -60,6 +63,9 @@ module.exports = {
         helpEmbed.setDescription(description);
         helpEmbed.setColor(defaultColor);
 
-        message.channel.send(helpEmbed);
+        message.channel.send(helpEmbed)
+            .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
+
+        message.delete({ timeout: autoDeleteDelay });
     },
 };
