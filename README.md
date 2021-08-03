@@ -1,4 +1,4 @@
-# Say :wave: to Object Locker!
+# Say :wave: to Object Locker
 
 ## I am a Discord bot trying to help avoid merge conflicts in (Game) Dev Teams :innocent:
 
@@ -15,4 +15,4 @@ If you're feeling curious, you can use `!lockstatus server` to see all locked ob
 Don't understand something? Use `!help` or `!help [command name]` to let me explain stuff to you!
 
 Written using Discord.JS v12  
-Made with love by [indrayana.net](https://github.com/made-indrayana) © 2021§
+Made with love by [indrayana.net](https://github.com/made-indrayana) © 2021
