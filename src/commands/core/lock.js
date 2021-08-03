@@ -15,6 +15,8 @@ module.exports = {
             reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage}\``;
             message.channel.send(embed(errorTitle, reply, 'error'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
+
             return;
         }
 
@@ -29,6 +31,8 @@ module.exports = {
         if (result != null) {
             message.channel.send(embed(errorTitle, `\`${args[0]}\` is already locked by <@${result.userID}>!`, 'error'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
+
         }
 
         else if(result === null) {
@@ -40,8 +44,8 @@ module.exports = {
             );
             message.channel.send(embed('Locked!', `\`${args[0]}\` is now locked!`, 'success'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-        }
+            message.delete({ timeout: autoDeleteDelay });
 
-        message.delete({ timeout: autoDeleteDelay });
+        }
     },
 };

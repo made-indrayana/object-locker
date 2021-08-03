@@ -15,6 +15,7 @@ module.exports = {
             reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage}\``;
             message.channel.send(embed(errorTitle, reply, 'error'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
             return;
         }
 
@@ -30,13 +31,14 @@ module.exports = {
             const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[0]);
             message.channel.send(embed('Unlocked!', `\`${args[0]}\` is now unlocked!`, 'success'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
+
         }
         else {
             message.channel.send(embed(errorTitle, `\`${args[0]}\` is not locked!`, 'error'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
+
         }
-
-        message.delete({ timeout: autoDeleteDelay });
-
     },
 };
