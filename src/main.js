@@ -1,6 +1,7 @@
 const fs = require('fs');
 const token = require('../token.json');
 const { prefix, warningTitle, errorTitle } = require('../config.json');
+const about = require('./utility/about-text');
 const database = require('./database');
 const embed = require('./utility/embed');
 
@@ -27,7 +28,7 @@ client.on('ready', () => {
 
 client.on('guildCreate', async (guild) => {
     client.users.fetch(guild.ownerID)
-        .then((user) => user.send(embed('Say hello to Object Locker! :yum:', 'WIP Content')))
+        .then((user) => user.send(about))
         .catch((err) => console.log(err));
 });
 
