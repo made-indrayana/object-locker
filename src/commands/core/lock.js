@@ -12,7 +12,7 @@ module.exports = {
     async execute(message, args) {
         if (args.length > 1) {
             let reply = 'Too many arguments, please use only one argument.';
-            reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage}\``;
+            reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage[0]}\``;
             message.channel.send(embed(errorTitle, reply, 'error'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
             message.delete({ timeout: autoDeleteDelay });
