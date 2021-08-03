@@ -24,7 +24,7 @@ Entry.init(
 async function validateDatabase(database) {
     try {
         await instance.authenticate(database);
-        await database.sync({ force:true });
+        await database.sync();
         console.log('Database connection has been established successfully.');
     }
     catch (error) {
