@@ -1,4 +1,4 @@
-const embed = require('../../utilities/embed');
+const embed = require('../../utility/embed');
 
 module.exports = {
     name: 'ping',

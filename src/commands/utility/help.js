@@ -1,5 +1,5 @@
 const { prefix, errorTitle, helpTitle, defaultColor } = require('../../../config.json');
-const embed = require('../../utilities/embed');
+const embed = require('../../utility/embed');
 const Discord = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping'];
 

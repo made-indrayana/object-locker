@@ -1,5 +1,5 @@
 const database = require('../../database');
-const embed = require('../../utilities/embed');
+const embed = require('../../utility/embed');
 
 module.exports = {
     name: 'lockstatus',

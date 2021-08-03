@@ -2,7 +2,7 @@ const fs = require('fs');
 const token = require('../token.json');
 const { prefix, warningTitle, errorTitle } = require('../config.json');
 const database = require('./database');
-const embed = require('./utilities/embed');
+const embed = require('./utility/embed');
 
 // Discord
 const Discord = require('discord.js');

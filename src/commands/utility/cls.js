@@ -1,4 +1,4 @@
-const embed = require('../../utilities/embed');
+const embed = require('../../utility/embed');
 const { errorTitle } = require('../../../config.json');
 
 module.exports = {

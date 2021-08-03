@@ -1,4 +1,4 @@
-const embed = require('../../utilities/embed');
+const about = require('../../utility/about-text');
 
 module.exports = {
     name: 'about',
