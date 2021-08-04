@@ -1,7 +1,7 @@
 const { prefix, errorTitle, helpTitle, defaultColor, autoDeleteDelay } = require('../../../config.json');
 const embed = require('../../utility/embed');
 const Discord = require('discord.js');
-const ignoreCommands = ['cls', 'help', 'ping'];
+const ignoreCommands = ['cls', 'help', 'ping', 'jolott'];
 
 module.exports = {
     name: 'help',
