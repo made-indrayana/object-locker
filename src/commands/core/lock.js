@@ -10,42 +10,41 @@ module.exports = {
     args: true,
     guildOnly: true,
     async execute(message, args) {
-        if (args.length > 1) {
-            let reply = 'Too many arguments, please use only one argument.';
-            reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage[0]}\``;
-            message.channel.send(embed(errorTitle, reply, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
+        let hasBeenDeleted = false;
+        for (let i = 0; i < args.length; i++) {
+            const result = await database.Entry.findOne({
+                where: {
+                    serverID: message.guild.id,
+                    channelID: message.channel.id,
+                    lockedObject: args[i],
+                },
+            });
 
-            return;
+            if (result != null) {
+                message.channel.send(embed(errorTitle, `\`${args[i]}\` is already locked by <@${result.userID}>!`, 'error'))
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                if(!hasBeenDeleted) {
+                    message.delete({ timeout: autoDeleteDelay });
+                    hasBeenDeleted = true;
+                }
+
+            }
+
+            else if(result === null) {
+                database.createEntry(
+                    message.guild.id,
+                    message.channel.id,
+                    message.author.id,
+                    args[i],
+                );
+                message.channel.send(embed('Locked!', `\`${args[i]}\` is now locked!`, 'success'))
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                if(!hasBeenDeleted) {
+                    message.delete({ timeout: autoDeleteDelay });
+                    hasBeenDeleted = true;
+                }
+            }
         }
 
-        const result = await database.Entry.findOne({
-            where: {
-                serverID: message.guild.id,
-                channelID: message.channel.id,
-                lockedObject: args[0],
-            },
-        });
-
-        if (result != null) {
-            message.channel.send(embed(errorTitle, `\`${args[0]}\` is already locked by <@${result.userID}>!`, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
-
-        }
-
-        else if(result === null) {
-            database.createEntry(
-                message.guild.id,
-                message.channel.id,
-                message.author.id,
-                args[0],
-            );
-            message.channel.send(embed('Locked!', `\`${args[0]}\` is now locked!`, 'success'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
-
-        }
     },
 };
