@@ -1,6 +1,6 @@
 {
   "name": "object-locker",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Object-Locking Discord Bot for Game Developer, especially those who are using git and doesn't have the 'lock/checkout' function of SVN/Perforce.",
   "main": "src/main.js",
   "scripts": {
