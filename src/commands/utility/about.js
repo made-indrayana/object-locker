@@ -9,6 +9,6 @@ module.exports = {
     async execute(message) {
         message.channel.send(about)
             .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-        message.delete({timeout: autoDeleteDelay * delayMultiplier });
+        message.delete({ timeout: autoDeleteDelay * delayMultiplier });
     },
 };
