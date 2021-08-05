@@ -1,6 +1,7 @@
 const database = require('../../database');
 const embed = require('../../utility/embed');
 const { autoDeleteDelay } = require('../../../config.json');
+const delayMultiplier = 2;
 
 module.exports = {
     name: 'lockstatus',
@@ -27,7 +28,7 @@ module.exports = {
             if (results.length > 1)
                 embedTitle += 's';
             message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
         }
         else if (args[0] === 'server') {
             let embedTitle = 'Locked Object';
@@ -48,9 +49,9 @@ module.exports = {
             if (results.length > 1)
                 embedTitle += 's';
             message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
         }
 
-        message.delete({ timeout: autoDeleteDelay * 6 });
+        message.delete({ timeout: autoDeleteDelay * delayMultiplier });
     },
 };
