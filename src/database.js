@@ -52,8 +52,10 @@ async function destroyEntry(serverID, channelID, objectName) {
             where: {
                 serverID: serverID,
                 channelID: channelID,
-                lockedObject: objectName,
+                lockedObject: instance.where(
+                    instance.fn('LOWER', instance.col('lockedObject')), 'IS', objectName.toLowerCase()),
             },
+
         });
     }
     catch (error) {

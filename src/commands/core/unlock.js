@@ -70,14 +70,15 @@ module.exports = {
                     where: {
                         serverID: message.guild.id,
                         channelID: message.channel.id,
-                        lockedObject: args[i],
+                        lockedObject: database.instance.where(
+                            database.instance.fn('LOWER', database.instance.col('lockedObject')), 'IS', args[i].toLowerCase()),
                     },
                 });
 
                 if (result != null) {
                 // eslint-disable-next-line no-unused-vars
-                    const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[0]);
-                    message.channel.send(embed('Unlocked!', `\`${args[i]}\` is now unlocked!`, 'success'))
+                    const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[i]);
+                    message.channel.send(embed('Unlocked!', `\`${result.lockedObject}\` is now unlocked!`, 'success'))
                         .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
                     if(!hasBeenDeleted) {
                         message.delete({ timeout: autoDeleteDelay });

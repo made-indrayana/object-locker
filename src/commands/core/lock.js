@@ -18,12 +18,13 @@ module.exports = {
                 where: {
                     serverID: message.guild.id,
                     channelID: message.channel.id,
-                    lockedObject: args[i],
+                    lockedObject: database.instance.where(
+                        database.instance.fn('LOWER', database.instance.col('lockedObject')), 'IS', args[i].toLowerCase()),
                 },
             });
 
             if (result != null) {
-                message.channel.send(embed(errorTitle, `\`${args[i]}\` is already locked by <@${result.userID}>!`, 'error'))
+                message.channel.send(embed(errorTitle, `\`${result.lockedObject}\` is already locked by <@${result.userID}>!`, 'error'))
                     .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
                 if(!hasBeenDeleted) {
                     message.delete({ timeout: autoDeleteDelay });
