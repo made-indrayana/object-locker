@@ -7,8 +7,14 @@ module.exports = {
     args: false,
     description: 'About me :nerd:',
     async execute(message) {
-        message.channel.send(about)
-            .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-        message.delete({ timeout: autoDeleteDelay * delayMultiplier });
+        if(message.channel.type === 'dm')
+            message.channel.send(about);
+
+        else {
+            message.channel.send(about)
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
+            message.delete({ timeout: autoDeleteDelay * delayMultiplier });
+        }
+
     },
 };
