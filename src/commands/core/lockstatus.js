@@ -1,7 +1,7 @@
 const database = require('../../database');
 const embed = require('../../utility/embed');
 const { autoDeleteDelay } = require('../../../config.json');
-const delayMultiplier = 2;
+const delayMultiplier = 1;
 
 module.exports = {
     name: 'lockstatus',

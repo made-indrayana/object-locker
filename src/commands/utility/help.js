@@ -2,13 +2,14 @@ const { prefix, errorTitle, helpTitle, defaultColor, autoDeleteDelay } = require
 const embed = require('../../utility/embed');
 const Discord = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping', 'jolott'];
+const delayMultiplier = 3;
+
 
 module.exports = {
     name: 'help',
     description: 'List all of my commands or info about a specific command.',
     aliases: ['commands', '!'],
     usage: ['[command name]'],
-    cooldown: 5,
     execute(message, args) {
         const { commands } = message.client;
         const helpEmbed = new Discord.MessageEmbed();
@@ -38,7 +39,7 @@ module.exports = {
             helpEmbed.setColor(defaultColor);
             helpEmbed.setFooter(`You can send ${prefix}help [command name] to get info on a specific command!`);
             return message.channel.send(helpEmbed)
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
         }
 
         const name = args[0].toLowerCase();
@@ -64,7 +65,7 @@ module.exports = {
         helpEmbed.setColor(defaultColor);
 
         message.channel.send(helpEmbed)
-            .then((msg) => msg.delete({ timeout: autoDeleteDelay * 6 }));
+            .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
 
         message.delete({ timeout: autoDeleteDelay });
     },
