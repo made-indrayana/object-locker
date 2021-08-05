@@ -7,38 +7,87 @@ module.exports = {
     description: 'Use command to lock object on the channel.',
     aliases: ['unblock', 'release'],
     usage: ['objectNameToLock', 'sceneName', 'prefabName'],
-    args: true,
+    args: false,
     guildOnly: true,
     async execute(message, args) {
-        if (args.length > 1) {
-            let reply = 'Too many arguments, please use only one argument.';
-            reply += `\nThe proper usage would be: \`${prefix}${this.name} ${this.usage[0]}\``;
-            message.channel.send(embed(errorTitle, reply, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
-            return;
+        let hasBeenDeleted = false;
+
+        // IF THERE'S NO ARGUMENT, DO THE FOLLOWING
+
+        if(args.length === 0) {
+            const result = await database.Entry.findAll({
+                where: {
+                    serverID: message.guild.id,
+                    channelID: message.channel.id,
+                    userID: message.author.id,
+                },
+            });
+
+            if(result.length === 1) {
+                // eslint-disable-next-line no-unused-vars
+                const destroy = await database.destroyEntry(message.guild.id, message.channel.id, result[0].lockedObject);
+                message.channel.send(embed('Unlocked!', `\`${result[0].lockedObject}\` is now unlocked!`, 'success'))
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                if(!hasBeenDeleted) {
+                    message.delete({ timeout: autoDeleteDelay });
+                    hasBeenDeleted = true;
+                }
+            }
+
+            else if(result.length > 1) {
+                for(let i = 0; i < result.length; i++) {
+                    // eslint-disable-next-line no-unused-vars
+                    const destroy = await database.destroyEntry(message.guild.id, message.channel.id, result[i].lockedObject);
+                    message.channel.send(embed('Unlocked!', `\`${result[i].lockedObject}\` is now unlocked!`, 'success'))
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                    if(!hasBeenDeleted) {
+                        message.delete({ timeout: autoDeleteDelay });
+                        hasBeenDeleted = true;
+                    }
+                }
+            }
+
+            else {
+                message.channel.send(embed(errorTitle, 'You currently have no object locked!', 'error'))
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                if(!hasBeenDeleted) {
+                    message.delete({ timeout: autoDeleteDelay });
+                    hasBeenDeleted = true;
+                }
+            }
         }
 
-        const result = await database.Entry.findOne({
-            where: {
-                serverID: message.guild.id,
-                channelID: message.channel.id,
-                lockedObject: args[0],
-            },
-        });
-        if (result != null) {
-            // eslint-disable-next-line no-unused-vars
-            const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[0]);
-            message.channel.send(embed('Unlocked!', `\`${args[0]}\` is now unlocked!`, 'success'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
+        // IF THERE'S AN ARGUMENT, DO THE FOLLOWING:
 
-        }
-        else {
-            message.channel.send(embed(errorTitle, `\`${args[0]}\` is not locked!`, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
+        else if(args.length >= 1) {
+            for (let i = 0; i < args.length; i++) {
+                const result = await database.Entry.findOne({
+                    where: {
+                        serverID: message.guild.id,
+                        channelID: message.channel.id,
+                        lockedObject: args[i],
+                    },
+                });
 
+                if (result != null) {
+                // eslint-disable-next-line no-unused-vars
+                    const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[0]);
+                    message.channel.send(embed('Unlocked!', `\`${args[i]}\` is now unlocked!`, 'success'))
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                    if(!hasBeenDeleted) {
+                        message.delete({ timeout: autoDeleteDelay });
+                        hasBeenDeleted = true;
+                    }
+                }
+                else {
+                    message.channel.send(embed(errorTitle, `\`${args[i]}\` is not locked!`, 'error'))
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                    if(!hasBeenDeleted) {
+                        message.delete({ timeout: autoDeleteDelay });
+                        hasBeenDeleted = true;
+                    }
+                }
+            }
         }
     },
 };
