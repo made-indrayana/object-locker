@@ -16,12 +16,14 @@ function getColor(identifier) {
     }
 }
 
-function embed(title, content, color = 'default') {
+function embed(title, content, color = 'default', useDefaultFooter = true) {
     const finalColor = getColor(color);
     const object = new Discord.MessageEmbed()
         .setTitle(title)
         .setColor(finalColor)
         .setDescription(content);
+    if(useDefaultFooter)
+        object.setFooter(`This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.`);
     return object;
 }
 

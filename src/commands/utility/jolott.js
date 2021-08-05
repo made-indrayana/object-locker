@@ -6,6 +6,6 @@ module.exports = {
     args: false,
     description: 'Hi Jolott.',
     async execute(message) {
-        message.channel.send(embed('jolott says:', 'y tho', 'error'));
+        message.channel.send(embed('jolott says:', 'y tho', 'error', false));
     },
 };

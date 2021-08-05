@@ -48,7 +48,7 @@ client.on('message', async (message) => {
             return;
 
         if (command.guildOnly && message.channel.type === 'dm')
-            return message.reply(embed(errorTitle, 'I can\'t do it in a DM :(\nPlease execute this in a channel.', 'error'));
+            return message.reply(embed(errorTitle, 'I can\'t do it in a DM :(\nPlease execute this in a channel.', 'error', false));
 
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguments, ${message.author}!`;

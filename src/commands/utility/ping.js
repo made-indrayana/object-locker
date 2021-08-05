@@ -8,7 +8,7 @@ module.exports = {
     guildOnly: false,
     execute(message) {
         if(message.channel.type === 'dm')
-            message.channel.send(embed('...Pong!', 'I\'m alive!'));
+            message.channel.send(embed('...Pong!', 'I\'m alive!', 'default', false));
         else {
             message.channel.send(embed('...Pong!', 'I\'m alive!'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
