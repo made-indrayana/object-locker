@@ -4,6 +4,9 @@ token.json
 # Bot database
 database.sqlite
 
+# Bot Debugging/Dev Utilities
+src/commands/debug/
+
 # Logs
 logs
 *.log
