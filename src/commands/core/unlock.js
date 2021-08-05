@@ -2,11 +2,16 @@ const { prefix, errorTitle, autoDeleteDelay } = require('../../../config.json');
 const database = require('../../database');
 const embed = require('../../utility/embed');
 
+const commandName = 'unlock';
+
+
 module.exports = {
-    name: 'unlock',
+    name: commandName,
     description: 'Use command to lock object on the channel.',
     aliases: ['unblock', 'release'],
-    usage: ['objectNameToLock', 'sceneName', 'prefabName'],
+    usage: [`\`${prefix}${commandName}\` > will unlock *all* of your locked objects!`,
+        `\`${prefix}${commandName} sceneName\``,
+        `\`${prefix}${commandName} sceneName01 sceneName02\``],
     args: false,
     guildOnly: true,
     async execute(message, args) {

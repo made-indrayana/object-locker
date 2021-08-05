@@ -1,13 +1,16 @@
 const database = require('../../database');
 const embed = require('../../utility/embed');
-const { autoDeleteDelay } = require('../../../config.json');
+const { prefix, autoDeleteDelay } = require('../../../config.json');
 const delayMultiplier = 1;
 
+const commandName = 'lockstatus';
+
 module.exports = {
-    name: 'lockstatus',
-    description: 'Show lock status on the channel. It will also show server wide lock status with `server` argument.',
+    name: commandName,
+    description: 'Show lock status on the channel. Server wide lock status with `server` argument.',
     aliases: ['status'],
-    usage: ['', 'server'],
+    usage: [`\`${prefix}${commandName}\``, `\`${prefix}${commandName} server\``],
+    args: false,
     guildOnly: true,
     async execute(message, args) {
         if (args[0] === undefined) {

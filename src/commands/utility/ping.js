@@ -4,10 +4,16 @@ const { autoDeleteDelay } = require('../../../config.json');
 module.exports = {
     name: 'ping',
     args: false,
-    description: 'Ping!',
+    description: 'Pong!',
+    guildOnly: false,
     execute(message) {
-        message.channel.send(embed('...Pong!', 'I\'m alive!'))
-            .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-        message.delete({ timeout: autoDeleteDelay });
+        if(message.channel.type === 'dm')
+            message.channel.send(embed('...Pong!', 'I\'m alive!'));
+        else {
+            message.channel.send(embed('...Pong!', 'I\'m alive!'))
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+            message.delete({ timeout: autoDeleteDelay });
+        }
+
     },
 };

@@ -52,8 +52,11 @@ client.on('message', async (message) => {
 
         if (command.args && !args.length) {
             let reply = `You didn't provide any arguments, ${message.author}!`;
-            if(command.usage)
-                reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+            if(command.usage) {
+                reply += '\nThe proper usage would be:';
+                for(let i = 0; i < command.usage.length; i++)
+                    reply += `\n\`${command.usage[i]}\``;
+            }
             message.channel.send(embed(warningTitle, reply, 'warning'))
                 .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
             return message.delete({ timeout: autoDeleteDelay });
