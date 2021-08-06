@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.7
+
+- Object name is now fully case-insensitive
+- Bug fixes that can cause crash on DMs
+- Added footer to the bot's embed to notify user about auto deleting messages
+- TODO: Bugfix: if you delete the bot's messages before the auto delete kicks in, it will crash the bot
+
 ## 0.9.6
 
 - Changed `!unlock` behaviour so it would unlock all objects locked by the user instead of requiring the object name explicitly
