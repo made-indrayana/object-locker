@@ -1,5 +1,5 @@
 const fs = require('fs');
-const token = require('../token.json');
+const { token } = require('../token.json');
 const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
 const about = require('./utility/about-text');
 const database = require('./database');
@@ -74,4 +74,4 @@ client.on('message', async (message) => {
     }
 });
 
-client.login(token.id);
+client.login(token);
