@@ -21,6 +21,19 @@ Entry.init(
     },
 );
 
+class LockStatusMessages extends Model {}
+LockStatusMessages.init(
+    {
+        serverID: { type: DataTypes.STRING, allowNull: false },
+        channelID: { type: DataTypes.STRING, allowNull: false },
+        messageID: { type: DataTypes.STRING, allowNull: false },
+    },
+    {
+        sequelize: instance,
+        modelName: 'LockStatusMessages',
+    },
+);
+
 async function validateDatabase(database) {
     try {
         await instance.authenticate(database);
@@ -62,4 +75,36 @@ async function destroyEntry(serverID, channelID, objectName) {
         console.error(`Unable to destroy entry: ${error}`);
     }
 }
-module.exports = { instance, Entry, validateDatabase, createEntry, destroyEntry };
+
+async function registerLastLockStatusMessage(serverID, channelID, lockMessageID) {
+    try {
+        await LockStatusMessages.create({
+            serverID: serverID,
+            channelID: channelID,
+            messageID: lockMessageID,
+        });
+    }
+    catch (error) {
+        console.error(`Unable to create entry: ${error}`);
+    }
+}
+
+async function updateLastLockStatusMessage(serverID, channelID, lockMessageID) {
+    try {
+        await LockStatusMessages.update({ messageID: lockMessageID }, {
+            where: {
+                serverID: serverID,
+                channelID: channelID,
+            },
+        });
+    }
+    catch (error) {
+        console.error(`Unable to update entry: ${error}`);
+    }
+}
+module.exports = {
+    instance,
+    Entry, LockStatusMessages,
+    validateDatabase, createEntry, destroyEntry,
+    registerLastLockStatusMessage, updateLastLockStatusMessage,
+};

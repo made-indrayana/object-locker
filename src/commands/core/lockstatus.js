@@ -5,6 +5,22 @@ const delayMultiplier = 1;
 
 const commandName = 'lockstatus';
 
+async function handleLockStatusMessages(message, lockmessage) {
+    const result = await database.LockStatusMessages.findOne({
+        where: { serverID: message.guild.id, channelID: message.channel.id },
+    });
+
+    if (result != null) {
+        message.channel.messages.fetch(result.messageID)
+            .then((msg) => msg.delete().catch((err) => console.error(err)))
+            .catch((err) => console.error(err));
+        database.updateLastLockStatusMessage(message.guild.id, message.channel.id, lockmessage.id);
+    }
+    else
+        database.registerLastLockStatusMessage(message.guild.id, message.channel.id, lockmessage.id);
+
+}
+
 module.exports = {
     name: commandName,
     description: 'Show lock status on the channel. Server wide lock status with `server` argument.',
@@ -30,8 +46,8 @@ module.exports = {
                 strings = 'No object is currently locked.';
             if (results.length > 1)
                 embedTitle += 's';
-            message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
+            message.channel.send(embed(embedTitle, strings, 'default', false))
+                .then((lockmessage) => handleLockStatusMessages(message, lockmessage));
         }
         else if (args[0] === 'server') {
             let embedTitle = 'Locked Object';
@@ -51,8 +67,8 @@ module.exports = {
                 strings = 'No object is currently locked.';
             if (results.length > 1)
                 embedTitle += 's';
-            message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
+            message.channel.send(embed(embedTitle, strings, 'default', false))
+                .then((lockmessage) => handleLockStatusMessages(message, lockmessage));
         }
 
         message.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {});
