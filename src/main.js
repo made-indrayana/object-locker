@@ -61,8 +61,8 @@ client.on('message', async (message) => {
                     reply += `\n\`${command.usage[i]}\``;
             }
             message.channel.send(embed(warningTitle, reply, 'warning'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            return message.delete({ timeout: autoDeleteDelay });
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+            return message.delete({ timeout: autoDeleteDelay }).catch(() => {});
         }
 
         try {
@@ -71,8 +71,8 @@ client.on('message', async (message) => {
         catch (error) {
             console.error(error);
             message.reply(embed(errorTitle, `there was an error trying to execute that command!\nError message: \`${error}\``, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-            message.delete({ timeout: autoDeleteDelay });
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+            message.delete({ timeout: autoDeleteDelay }).catch(() => {});
         }
     }
 });

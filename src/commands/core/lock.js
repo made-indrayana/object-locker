@@ -1,6 +1,7 @@
 const { prefix, errorTitle, autoDeleteDelay } = require('../../../config.json');
 const database = require('../../database');
 const embed = require('../../utility/embed');
+const lockstatus = require('./lockstatus');
 
 const commandName = 'lock';
 
@@ -12,7 +13,6 @@ module.exports = {
     args: true,
     guildOnly: true,
     async execute(message, args) {
-        let hasBeenDeleted = false;
         for (let i = 0; i < args.length; i++) {
             const result = await database.Entry.findOne({
                 where: {
@@ -25,11 +25,8 @@ module.exports = {
 
             if (result != null) {
                 message.channel.send(embed(errorTitle, `\`${result.lockedObject}\` is already locked by <@${result.userID}>!`, 'error'))
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                if(!hasBeenDeleted) {
-                    message.delete({ timeout: autoDeleteDelay });
-                    hasBeenDeleted = true;
-                }
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
 
             }
 
@@ -41,13 +38,10 @@ module.exports = {
                     args[i],
                 );
                 message.channel.send(embed('Locked!', `\`${args[i]}\` is now locked!`, 'success'))
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                if(!hasBeenDeleted) {
-                    message.delete({ timeout: autoDeleteDelay });
-                    hasBeenDeleted = true;
-                }
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
             }
         }
-
+        lockstatus.execute(message, [undefined]);
     },
 };

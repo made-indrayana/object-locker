@@ -44,8 +44,8 @@ module.exports = {
                 message.channel.send(helpEmbed);
             else {
                 message.channel.send(helpEmbed)
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-                message.delete({ timeout: autoDeleteDelay });
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
             }
             return;
 
@@ -56,13 +56,13 @@ module.exports = {
 
         if (!command) {
             message.reply(embed(errorTitle, 'That\'s not a valid command!', 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
             if(message.channel.type === 'dm')
                 message.channel.send(helpEmbed);
             else {
                 message.channel.send(helpEmbed)
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-                message.delete({ timeout: autoDeleteDelay });
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
             }
             return;
 

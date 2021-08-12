@@ -12,8 +12,8 @@ module.exports = {
 
         else {
             message.channel.send(about)
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-            message.delete({ timeout: autoDeleteDelay * delayMultiplier });
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
+            message.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {});
         }
 
     },

@@ -1,6 +1,8 @@
 const { prefix, errorTitle, autoDeleteDelay } = require('../../../config.json');
 const database = require('../../database');
 const embed = require('../../utility/embed');
+const lockstatus = require('./lockstatus');
+
 
 const commandName = 'unlock';
 
@@ -15,7 +17,6 @@ module.exports = {
     args: false,
     guildOnly: true,
     async execute(message, args) {
-        let hasBeenDeleted = false;
 
         // IF THERE'S NO ARGUMENT, DO THE FOLLOWING
 
@@ -32,11 +33,9 @@ module.exports = {
                 // eslint-disable-next-line no-unused-vars
                 const destroy = await database.destroyEntry(message.guild.id, message.channel.id, result[0].lockedObject);
                 message.channel.send(embed('Unlocked!', `\`${result[0].lockedObject}\` is now unlocked!`, 'success'))
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                if(!hasBeenDeleted) {
-                    message.delete({ timeout: autoDeleteDelay });
-                    hasBeenDeleted = true;
-                }
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+
             }
 
             else if(result.length > 1) {
@@ -44,21 +43,17 @@ module.exports = {
                     // eslint-disable-next-line no-unused-vars
                     const destroy = await database.destroyEntry(message.guild.id, message.channel.id, result[i].lockedObject);
                     message.channel.send(embed('Unlocked!', `\`${result[i].lockedObject}\` is now unlocked!`, 'success'))
-                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                    if(!hasBeenDeleted) {
-                        message.delete({ timeout: autoDeleteDelay });
-                        hasBeenDeleted = true;
-                    }
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                    message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+
                 }
             }
 
             else {
                 message.channel.send(embed(errorTitle, 'You currently have no object locked!', 'error'))
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                if(!hasBeenDeleted) {
-                    message.delete({ timeout: autoDeleteDelay });
-                    hasBeenDeleted = true;
-                }
+                    .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+
             }
         }
 
@@ -79,21 +74,19 @@ module.exports = {
                 // eslint-disable-next-line no-unused-vars
                     const destroy = await database.destroyEntry(message.guild.id, message.channel.id, args[i]);
                     message.channel.send(embed('Unlocked!', `\`${result.lockedObject}\` is now unlocked!`, 'success'))
-                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                    if(!hasBeenDeleted) {
-                        message.delete({ timeout: autoDeleteDelay });
-                        hasBeenDeleted = true;
-                    }
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                    message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+
                 }
                 else {
                     message.channel.send(embed(errorTitle, `\`${args[i]}\` is not locked!`, 'error'))
-                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }));
-                    if(!hasBeenDeleted) {
-                        message.delete({ timeout: autoDeleteDelay });
-                        hasBeenDeleted = true;
-                    }
+                        .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
+                    message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+
                 }
             }
         }
+
+        lockstatus.execute(message, [undefined]);
     },
 };

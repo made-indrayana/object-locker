@@ -8,7 +8,7 @@ const commandName = 'lockstatus';
 module.exports = {
     name: commandName,
     description: 'Show lock status on the channel. Server wide lock status with `server` argument.',
-    aliases: ['status'],
+    aliases: ['status', 'ls'],
     usage: [`\`${prefix}${commandName}\``, `\`${prefix}${commandName} server\``],
     args: false,
     guildOnly: true,
@@ -31,7 +31,7 @@ module.exports = {
             if (results.length > 1)
                 embedTitle += 's';
             message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
         }
         else if (args[0] === 'server') {
             let embedTitle = 'Locked Object';
@@ -52,9 +52,9 @@ module.exports = {
             if (results.length > 1)
                 embedTitle += 's';
             message.channel.send(embed(embedTitle, strings))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
         }
 
-        message.delete({ timeout: autoDeleteDelay * delayMultiplier });
+        message.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {});
     },
 };
