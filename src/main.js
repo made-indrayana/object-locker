@@ -1,9 +1,13 @@
-const fs = require('fs');
 const { token } = require('../token.json');
 const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
+
+const fs = require('fs');
+
 const about = require('./utility/about-text');
 const database = require('./database');
-const embed = require('./utility/embed');
+
+const { embed, sendEmbedMessage, handleError, handleMessageDelete } = require('./utility/handler');
+const { log, Log } = require('./utility/log');
 
 // Discord
 const Discord = require('discord.js');
@@ -25,14 +29,14 @@ for (const folder of commandFolders) {
 }
 
 client.on('ready', () => {
-    console.log('Bot "Object Locker" has been started!');
+    log('Bot "Object Locker" has been started!', Log.bg.green);
     database.validateDatabase(database.instance);
 });
 
 client.on('guildCreate', async (guild) => {
     client.users.fetch(guild.ownerID)
         .then((user) => user.send(about))
-        .catch((err) => console.log(err));
+        .catch((err) => handleError(err));
 });
 
 client.on('message', async (message) => {
@@ -60,19 +64,24 @@ client.on('message', async (message) => {
                 for(let i = 0; i < command.usage.length; i++)
                     reply += `\n\`${command.usage[i]}\``;
             }
-            message.channel.send(embed(warningTitle, reply, 'warning'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
-            return message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+            // message.channel.send(embed(warningTitle, reply, 'warning'))
+            //     .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch((err) => handleError(err)));
+            // return message.delete({ timeout: autoDeleteDelay }).catch((err) => handleError(err));
+
+            sendEmbedMessage(message, warningTitle, reply, 'warning');
+            handleMessageDelete(message);
+
+            return;
         }
 
         try {
             command.execute(message, args);
         }
         catch (error) {
-            console.error(error);
+            log(error, Log.fg.red);
             message.reply(embed(errorTitle, `there was an error trying to execute that command!\nError message: \`${error}\``, 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
-            message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch((err) => handleError(err)));
+            message.delete({ timeout: autoDeleteDelay }).catch((err) => handleError(err));
         }
     }
 });

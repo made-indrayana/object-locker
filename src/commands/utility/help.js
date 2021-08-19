@@ -1,8 +1,9 @@
-const { prefix, errorTitle, helpTitle, defaultColor, autoDeleteDelay } = require('../../../config.json');
-const embed = require('../../utility/embed');
+const { prefix, errorTitle, helpTitle, defaultColor } = require('../../../config.json');
+const { sendMessage, sendEmbedMessage, handleMessageDelete } = require('../../utility/handler');
 const Discord = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping', 'jolott'];
-const delayMultiplier = 1;
+
+const delayMultiplier = 6;
 
 
 module.exports = {
@@ -40,13 +41,9 @@ module.exports = {
             helpEmbed.setColor(defaultColor);
             helpEmbed.setFooter(`You can send ${prefix}help [command name] to get info on a specific command!`);
 
-            if(message.channel.type === 'dm')
-                message.channel.send(helpEmbed);
-            else {
-                message.channel.send(helpEmbed)
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
-                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
-            }
+            sendMessage(message, helpEmbed, delayMultiplier);
+            handleMessageDelete(message, delayMultiplier);
+
             return;
 
         }
@@ -55,15 +52,8 @@ module.exports = {
         const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
 
         if (!command) {
-            message.reply(embed(errorTitle, 'That\'s not a valid command!', 'error'))
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
-            if(message.channel.type === 'dm')
-                message.channel.send(helpEmbed);
-            else {
-                message.channel.send(helpEmbed)
-                    .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
-                message.delete({ timeout: autoDeleteDelay }).catch(() => {});
-            }
+            sendEmbedMessage(message, errorTitle, 'That\'s not a valid command! Type `!help` to get more information.', 'error');
+            handleMessageDelete(message);
             return;
 
         }
@@ -82,12 +72,8 @@ module.exports = {
         helpEmbed.setDescription(description);
         helpEmbed.setColor(defaultColor);
 
-        if(message.channel.type === 'dm')
-            message.channel.send(helpEmbed);
-        else {
-            message.channel.send(helpEmbed)
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }));
-            message.delete({ timeout: autoDeleteDelay });
-        }
+        sendMessage(message, helpEmbed);
+        handleMessageDelete(message, delayMultiplier);
+
     },
 };

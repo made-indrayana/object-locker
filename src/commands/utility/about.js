@@ -1,20 +1,14 @@
 const about = require('../../utility/about-text');
-const { autoDeleteDelay } = require('../../../config.json');
-const delayMultiplier = 3;
+const { sendMessage, handleMessageDelete } = require('../../utility/handler');
+
+const delayMultiplier = 6;
 
 module.exports = {
     name: 'about',
     args: false,
     description: 'About me :nerd:',
     async execute(message) {
-        if(message.channel.type === 'dm')
-            message.channel.send(about);
-
-        else {
-            message.channel.send(about)
-                .then((msg) => msg.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {}));
-            message.delete({ timeout: autoDeleteDelay * delayMultiplier }).catch(() => {});
-        }
-
+        sendMessage(message, about, delayMultiplier);
+        handleMessageDelete(message, delayMultiplier);
     },
 };

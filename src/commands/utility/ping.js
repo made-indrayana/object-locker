@@ -1,15 +1,15 @@
-const embed = require('../../utility/embed');
-const { autoDeleteDelay } = require('../../../config.json');
+const { sendEmbedMessage, handleMessageDelete } = require('../../utility/handler');
+
+const commandName = 'ping';
 
 module.exports = {
-    name: 'ping',
+    name: commandName,
     args: false,
     description: 'Pong!',
     guildOnly: false,
     execute(message) {
-        message.channel.send(embed('...Pong!', 'I\'m alive!', 'default', false))
-            .then((msg) => msg.delete({ timeout: autoDeleteDelay }).catch(() => {}));
-        message.delete({ timeout: autoDeleteDelay }).catch(() => {});
+        sendEmbedMessage(message, '...Pong!', 'I\'m alive!', 'default', true);
+        handleMessageDelete(message);
     },
 
 };

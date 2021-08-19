@@ -1,4 +1,4 @@
-const embed = require('./embed');
+const { embed } = require('./handler');
 const description = `I am a bot to help you avoid merge conflicts in (Game) Dev Teams :innocent:
         
         If you're using \`git\` as your version control and want to work on non-mergeable object, like \`Unity Scenes\` or \`Prefabs\`, you can use me to tell all of the team members what you're working on!

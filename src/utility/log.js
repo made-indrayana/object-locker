@@ -36,4 +36,12 @@ function log(text, color = Log.fg.cyan) {
     console.log(`${color}%s${Log.reset}`, text);
 }
 
-module.exports = { Log, log };
+function logWarning(text, color = Log.fg.yellow) {
+    console.log(`${color}%s${Log.reset}`, text);
+}
+
+function logError(text, color = Log.fg.red) {
+    console.log(`${color}%s${Log.reset}`, text);
+}
+
+module.exports = { Log, log, logWarning, logError };
