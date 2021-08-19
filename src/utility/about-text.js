@@ -11,7 +11,7 @@ const description = `I am a bot to help you avoid merge conflicts in (Game) Dev 
         to announce **I'M WORKING ON THIS :nerd:**
 
         When you're finished, use
-        \`!unlock\` or \`!unlock sceneName\` or even \`!unlock scene01 scene02 scene\`
+        \`!unlock\` or \`!unlock sceneName\` or even \`!unlock scene01 scene02 prefabA\`
         to say **I'M DONE WITH THIS :sunglasses:**
         
         Whenever you want to know who is working on what in a project, use
