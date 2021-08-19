@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.9.9
+
+- Major refactoring on code to make code more readable and understandable
+- Handling errors and auto-delete has been improved massively
+- Object name is now case-insensitive in database level
+- Improved and reduced database queries
+
+## 0.9.8
+
+- Fixed bot crashing when auto delete tries to delete non-existing message.
+- Changed `!lockstatus` behaviour so it doesn't auto-delete and persist until the next status message is posted.
+- `!lock` and `!unlock` will now automatically do `!lockstatus` as well to reflect changes on the locks status.
+
 ## 0.9.7
 
 - Object name is now fully case-insensitive
