@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { token } = require('../token.json');
 const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
 
 const fs = require('fs');
