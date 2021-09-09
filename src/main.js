@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { token } = require('../token.json');
 const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
 
@@ -86,4 +87,4 @@ client.on('message', async (message) => {
     }
 });
 
-client.login(token);
+client.login();
