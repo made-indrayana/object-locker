@@ -15,8 +15,9 @@ module.exports = {
     args: true,
     guildOnly: true,
     async execute(message, args) {
+        const promises = [];
         for (let i = 0; i < args.length; i++) {
-            database.createEntry(
+            const promise = database.createEntry(
                 message.guild.id,
                 message.channel.id,
                 message.author.id,
@@ -30,8 +31,11 @@ module.exports = {
                         sendEmbedMessage(message, errorTitle, `\`${args[i]}\` is already locked!`, 'error');
                     else handleError(err);
                 });
+            promises.push(promise);
         }
-        handleMessageDelete(message);
-        lockstatus.execute(message, [], true);
+        Promise.allSettled(promises).then(() => {
+            handleMessageDelete(message);
+            lockstatus.execute(message, [], true);
+        });
     },
 };
