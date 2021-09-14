@@ -1,12 +1,15 @@
+require('dotenv').config();
 const { Sequelize, Model, DataTypes } = require('sequelize');
 const { log } = require('./utility/log');
 
-const instance = new Sequelize (
-    {
-        dialect: 'sqlite',
-        storage: 'database.sqlite',
-    },
-);
+const instance = new Sequelize (process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false,
+        },
+    } });
 
 class Entry extends Model {}
 Entry.init(
@@ -14,7 +17,7 @@ Entry.init(
         serverID: { type: DataTypes.STRING, allowNull: false },
         channelID: { type: DataTypes.STRING, allowNull: false, unique: 'project' },
         userID: { type: DataTypes.STRING, allowNull: false },
-        lockedObject: { type: DataTypes.STRING + ' COLLATE NOCASE', allowNull: false, unique: 'project' },
+        lockedObject: { type: DataTypes.CITEXT, allowNull: false, unique: 'project' },
     },
     {
         sequelize: instance,
@@ -36,14 +39,14 @@ LockStatusMessages.init(
 );
 
 async function validateDatabase(database) {
-    try {
-        await instance.authenticate(database);
-        await database.sync({});
-        log('Database connection has been established successfully.');
-    }
-    catch (error) {
-        console.error(`Unable to connect to the database: ${error}`);
-    }
+
+    await instance.authenticate(database)
+        .then(log('Database authenticated successfully.'))
+        .catch((err) => log(err, 'red'));
+    await database.sync({})
+        .then(log('Database synced successfully.'))
+        .catch((err) => log(err, 'red'));
+
 }
 
 async function createEntry(serverID, channelID, userID, objectName) {
