@@ -18,10 +18,11 @@ module.exports = {
     guildOnly: true,
     async execute(message, args) {
 
+        const promises = [];
         // IF THERE'S NO ARGUMENT, DO THE FOLLOWING:
 
         if (!args.length) {
-            database.destroyAllEntryFromUser(message.guild.id, message.channel.id, message.author.id)
+            const prms = database.destroyAllEntryFromUser(message.guild.id, message.channel.id, message.author.id)
                 .then((promise) => {
                     switch(promise) {
                     case 0:
@@ -37,13 +38,14 @@ module.exports = {
                     }
                 })
                 .catch((err) => handleError(err));
+            promises.push(prms);
         }
 
         // IF THERE'S AN ARGUMENT, DO THE FOLLOWING:
 
         else {
             for (let i = 0; i < args.length; i++) {
-                database.destroyEntry(message.guild.id, message.channel.id, args[i])
+                const prms = database.destroyEntry(message.guild.id, message.channel.id, args[i])
                     .then((promise) => {
                         switch(promise) {
                         case 0:
@@ -55,9 +57,14 @@ module.exports = {
                         }
                     })
                     .catch((err) => handleError(err));
+                promises.push(prms);
             }
         }
-        handleMessageDelete(message);
-        lockstatus.execute(message, [], true);
+
+        Promise.allSettled(promises).then(() => {
+            handleMessageDelete(message);
+            lockstatus.execute(message, [], true);
+        });
+
     },
 };
