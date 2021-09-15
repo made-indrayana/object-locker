@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { Sequelize, Model, DataTypes } = require('sequelize');
-const { log } = require('./utility/log');
+const { log, Log } = require('./utility/log');
 
 const instance = new Sequelize (process.env.DATABASE_URL, {
     dialect: 'postgres',
@@ -9,7 +9,9 @@ const instance = new Sequelize (process.env.DATABASE_URL, {
             require: true,
             rejectUnauthorized: false,
         },
-    } });
+    },
+    logging: (msg) => log(msg.slice(21), Log.dim),
+});
 
 class Entry extends Model {}
 Entry.init(
