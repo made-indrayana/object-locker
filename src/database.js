@@ -61,7 +61,7 @@ async function validateDatabase(database) {
     await instance.authenticate(database)
         .then(log('Database authenticated successfully.'))
         .catch((err) => log(err, 'red'));
-    await database.sync({force:true})
+    await database.sync()
         .then(log('Database synced successfully.'))
         .catch((err) => log(err, 'red'));
 
