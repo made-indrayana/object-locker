@@ -19,8 +19,11 @@ module.exports = {
         for (let i = 0; i < args.length; i++) {
             const promise = database.createEntry(
                 message.guild.id,
+                message.guild.name,
                 message.channel.id,
+                message.channel.name,
                 message.author.id,
+                message.author.username,
                 args[i],
             )
                 .then(() => {

@@ -16,7 +16,7 @@ async function handleLockStatusMessages(message, lockmessage) {
             .catch((err) => handleError(err));
     }
     else {
-        database.registerLastLockStatusMessage(message.guild.id, message.channel.id, lockmessage.id)
+        database.registerLastLockStatusMessage(message.guild.id, message.guild.name, message.channel.id, message.channel.name, lockmessage.id)
             .catch((err) => handleError(err));
     }
 }

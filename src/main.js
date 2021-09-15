@@ -38,6 +38,11 @@ client.on('guildCreate', async (guild) => {
     client.users.fetch(guild.ownerID)
         .then((user) => user.send(about))
         .catch((err) => handleError(err));
+    database.guildRegister(guild.id, guild.name, guild.ownerID);
+});
+
+client.on('guildDelete', async (guild) => {
+    database.guildDeregister(guild.id);
 });
 
 client.on('message', async (message) => {

@@ -16,7 +16,10 @@ Entry.init(
     {
         serverID: { type: DataTypes.STRING, allowNull: false },
         channelID: { type: DataTypes.STRING, allowNull: false, unique: 'project' },
+        serverName: { type: DataTypes.STRING, allowNull: false },
+        channelName: { type: DataTypes.STRING, allowNull: false },
         userID: { type: DataTypes.STRING, allowNull: false },
+        userName: { type: DataTypes.STRING, allowNull: false },
         lockedObject: { type: DataTypes.CITEXT, allowNull: false, unique: 'project' },
     },
     {
@@ -30,6 +33,8 @@ LockStatusMessages.init(
     {
         serverID: { type: DataTypes.STRING, allowNull: false },
         channelID: { type: DataTypes.STRING, allowNull: false },
+        serverName: { type: DataTypes.STRING, allowNull: false },
+        channelName: { type: DataTypes.STRING, allowNull: false },
         messageID: { type: DataTypes.STRING, allowNull: false },
     },
     {
@@ -38,23 +43,39 @@ LockStatusMessages.init(
     },
 );
 
+class GuildRegistration extends Model {}
+GuildRegistration.init(
+    {
+        serverID: { type: DataTypes.STRING, allowNull: false },
+        serverName: { type: DataTypes.STRING, allowNull: false },
+        serverOwnerID: { type: DataTypes.STRING, allowNull: false },
+    },
+    {
+        sequelize: instance,
+        modelName: 'ServerInstallation',
+    },
+);
+
 async function validateDatabase(database) {
 
     await instance.authenticate(database)
         .then(log('Database authenticated successfully.'))
         .catch((err) => log(err, 'red'));
-    await database.sync({})
+    await database.sync({force:true})
         .then(log('Database synced successfully.'))
         .catch((err) => log(err, 'red'));
 
 }
 
-async function createEntry(serverID, channelID, userID, objectName) {
+async function createEntry(serverID, serverName, channelID, channelName, userID, userName, objectName) {
 
     const promise = await Entry.create({
         serverID: serverID,
+        serverName: serverName,
         channelID: channelID,
+        channelName: channelName,
         userID: userID,
+        userName: userName,
         lockedObject: objectName,
     });
 
@@ -91,11 +112,13 @@ async function destroyAllEntryFromUser(serverID, channelID, userID) {
 
 }
 
-async function registerLastLockStatusMessage(serverID, channelID, lockMessageID) {
+async function registerLastLockStatusMessage(serverID, serverName, channelID, channelName, lockMessageID) {
 
     const promise = await LockStatusMessages.create({
         serverID: serverID,
+        serverName: serverName,
         channelID: channelID,
+        channelName: channelName,
         messageID: lockMessageID,
     });
 
@@ -114,9 +137,30 @@ async function updateLastLockStatusMessage(serverID, channelID, lockMessageID) {
     return promise;
 
 }
+
+async function guildRegister(serverID, serverName, serverOwnerID) {
+
+    const promise = await GuildRegistration.create({
+        serverID: serverID,
+        serverName: serverName,
+        serverOwnerID: serverOwnerID,
+    });
+
+    return promise;
+}
+
+async function guildDeregister(serverID) {
+
+    const promise = await GuildRegistration.destroy({
+        where: { serverID: serverID },
+    });
+
+    return promise;
+}
 module.exports = {
     instance,
     Entry, LockStatusMessages,
     validateDatabase, createEntry, destroyEntry, destroyAllEntryFromUser,
     registerLastLockStatusMessage, updateLastLockStatusMessage,
+    guildRegister, guildDeregister,
 };
