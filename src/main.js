@@ -1,4 +1,3 @@
-require ('newrelic');
 require('dotenv').config();
 
 const { prefix, warningTitle, errorTitle, autoDeleteDelay } = require('../config.json');
