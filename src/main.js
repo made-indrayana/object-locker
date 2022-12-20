@@ -12,7 +12,15 @@ const { log, Log } = require('./utility/log');
 
 // Discord
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({
+    intents: [
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.DirectMessages,
+    ],
+});
 client.commands = new Discord.Collection();
 
 // Parsing commands
@@ -29,8 +37,8 @@ for (const folder of commandFolders) {
     }
 }
 
-client.on('ready', () => {
-    log('Bot "Object Locker" has been started!', Log.bg.green);
+client.on('ready', c => {
+    log(`Bot ${c.user.tag} has been started!`, Log.bg.green);
     database.validateDatabase(database.instance);
 });
 
@@ -92,4 +100,4 @@ client.on('message', async (message) => {
     }
 });
 
-client.login();
+client.login(process.env.DISCORD_TOKEN);

@@ -65,14 +65,14 @@ function getColor(identifier) {
 
 function embed(title, content, color = 'default', useDefaultFooter = true, customFooter = '') {
     const finalColor = getColor(color);
-    const object = new Discord.MessageEmbed()
+    const object = new Discord.EmbedBuilder()
         .setTitle(title)
         .setColor(finalColor)
         .setDescription(content);
     if(useDefaultFooter && customFooter === '')
-        object.setFooter(`This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.`);
+        object.setFooter({ text: `This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.` });
     else
-        object.setFooter(customFooter);
+        object.setFooter({ text: customFooter });
     return object;
 }
 

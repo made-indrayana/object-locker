@@ -23,6 +23,6 @@ const description = `I am a bot to help you avoid merge conflicts in (Game) Dev 
         
         Still have questions? Use \`!help\` or \`!help [command name]\` and I’ll provide further explanation :)`;
 const embedObject = embed('Hi! I\'m Object Locker :yum:', `${description}`);
-embedObject.setFooter('Made with love by indrayana.net © 2021');
+embedObject.setFooter({ text: 'Made with love by indrayana.net © 2021' });
 
 module.exports = embedObject;
