@@ -3,6 +3,10 @@ const Discord = require('discord.js');
 const config = require('../../config.json');
 const { logError } = require('./log');
 
+function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
 function parseError(err, printLog = false) {
     let errorString = `${err.name}: ${err.message}`;
     errorString += `\nError Code: ${err.code}`;
@@ -41,7 +45,8 @@ async function handleMessageDelete(message, timeoutMultiplier = 1) {
         return promise;
     }
     default: {
-        const promise = message.delete({ timeout: config.autoDeleteDelay * timeoutMultiplier })
+        await sleep(config.autoDeleteDelay * timeoutMultiplier);
+        const promise = message.delete()
             .catch((err) => handleError(err));
         return promise;
     }
@@ -63,7 +68,7 @@ function getColor(identifier) {
     }
 }
 
-function embed(title, content, color = 'default', useDefaultFooter = true, customFooter = '') {
+function embed(title, content, color = 'default', useDefaultFooter = true, customFooter = null) {
     const finalColor = getColor(color);
     const object = new Discord.EmbedBuilder()
         .setTitle(title)
@@ -88,7 +93,7 @@ async function sendEmbedMessage(message, title, content, color = 'default', useD
     if(message.channel.type === ('dm' || 'group_dm'))
         useDefaultFooter = false;
 
-    const promise = message.channel.send(embed(title, content, color, useDefaultFooter, customFooter))
+    const promise = message.channel.send({ embeds: [embed(title, content, color, useDefaultFooter, customFooter)] })
         .then((botMessage) => handleMessageDelete(botMessage))
         .catch((err) => handleError(err));
 

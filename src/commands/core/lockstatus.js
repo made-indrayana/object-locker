@@ -47,9 +47,11 @@ module.exports = {
                     embedTitle += 's';
             }
             else if (results.length === 0)
-                strings = 'No object is currently locked.';
+                strings = ['No object is currently locked.'];
 
-            message.channel.send(embed(embedTitle, strings, 'default', false).setFooter('This message will persist until the next status message is issued.'))
+            const createEmbed = embed(embedTitle, strings.join('\r\n'), 'default', false)
+                .setFooter({ text: 'This message will persist until the next status message is issued.' });
+            message.channel.send({ embeds: [createEmbed] })
                 .then((lockmessage) => handleLockStatusMessages(message, lockmessage));
         }
 

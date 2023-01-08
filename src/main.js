@@ -37,23 +37,23 @@ for (const folder of commandFolders) {
     }
 }
 
-client.on('ready', c => {
+client.on(Discord.Events.ClientReady, c => {
     log(`Bot ${c.user.tag} has been started!`, Log.bg.green);
     database.validateDatabase(database.instance);
 });
 
-client.on('guildCreate', async (guild) => {
+client.on(Discord.Events.GuildCreate, async (guild) => {
     client.users.fetch(guild.ownerID)
         .then((user) => user.send(about))
         .catch((err) => handleError(err));
     database.guildRegister(guild.id, guild.name, guild.ownerID);
 });
 
-client.on('guildDelete', async (guild) => {
+client.on(Discord.Events.GuildDelete, async (guild) => {
     database.guildDeregister(guild.id);
 });
 
-client.on('message', async (message) => {
+client.on(Discord.Events.MessageCreate, async (message) => {
     if (!message.content.startsWith(prefix) || message.author.bot)
         return;
 
