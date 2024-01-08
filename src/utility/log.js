@@ -1,3 +1,5 @@
+require('log-timestamp');
+
 const Log = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
