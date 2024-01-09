@@ -1,16 +1,15 @@
-const { sendEmbedMessage, handleMessageDelete } = require('../../utility/handler');
-
-const commandName = 'ping';
+const { SlashCommandBuilder } = require('discord.js');
+const config = require('../../../config.json');
+const { embed } = require('../../utility/handler');
+const wait = require('node:timers/promises').setTimeout;
 
 module.exports = {
-    name: commandName,
-    args: false,
-    description: 'Pong!',
-    guildOnly: false,
-    execute(message) {
-        sendEmbedMessage(message, '...Pong!', 'I\'m alive!', 'default', true);
-        handleMessageDelete(message);
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Replies with Pong!'),
+    async execute(interaction) {
+        await interaction.reply({ embeds: [embed('...Pong!', 'I\'m alive!', 'default', true)] });
+        await wait(config.autoDeleteDelay);
+        await interaction.deleteReply();
     },
-
 };
-

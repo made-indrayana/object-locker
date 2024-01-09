@@ -3,10 +3,6 @@ const Discord = require('discord.js');
 const config = require('../../config.json');
 const { logError } = require('./log');
 
-function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-}
-
 function parseError(err, printLog = false) {
     let errorString = `${err.name}: ${err.message}`;
     errorString += `\nError Code: ${err.code}`;
@@ -37,21 +33,21 @@ function handleError(err) {
  * @param {Discord.Message} message Message object to be deleted.
  * @param {number} timeoutMultiplier Multplies the defined auto delete message's delay.
  */
-async function handleMessageDelete(message, timeoutMultiplier = 1) {
-    switch (message.channel.type) {
-    case'group_dm':
-    case 'dm': {
-        const promise = new Promise((resolve) => resolve('Message in DM, will not be deleted.'));
-        return promise;
-    }
-    default: {
-        await sleep(config.autoDeleteDelay * timeoutMultiplier);
-        const promise = message.delete()
-            .catch((err) => handleError(err));
-        return promise;
-    }
-    }
-}
+// async function handleMessageDelete(message, timeoutMultiplier = 1) {
+//     switch (message.channel.type) {
+//     case'group_dm':
+//     case 'dm': {
+//         const promise = new Promise((resolve) => resolve('Message in DM, will not be deleted.'));
+//         return promise;
+//     }
+//     default: {
+//         await sleep(config.autoDeleteDelay * timeoutMultiplier);
+//         const promise = message.delete()
+//             .catch((err) => handleError(err));
+//         return promise;
+//     }
+//     }
+// }
 
 function getColor(identifier) {
     switch(identifier) {
@@ -64,7 +60,7 @@ function getColor(identifier) {
     case 'error':
         return config.errorColor;
     default:
-        return identifier;
+        return config.defaultColor;
     }
 }
 
@@ -74,31 +70,13 @@ function embed(title, content, color = 'default', useDefaultFooter = true, custo
         .setTitle(title)
         .setColor(finalColor)
         .setDescription(content);
-    if(useDefaultFooter && customFooter === '')
+    if(useDefaultFooter | customFooter === null | customFooter === '')
         object.setFooter({ text: `This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.` });
     else
         object.setFooter({ text: customFooter });
     return object;
 }
 
-/**
- * @param {Discord.Message} message Message object, needed to be able to handle message deletion correctly.
- * @param {string} title Embed title.
- * @param {string} content Embed content.
- * @param {string} color Embed color defined in config.json OR custom color in hex.
- * @param {string} customFooter Content of custom footer if use custom footer is set to true.
- */
-async function sendEmbedMessage(message, title, content, color = 'default', useDefaultFooter = true, customFooter = '') {
-
-    if(message.channel.type === ('dm' || 'group_dm'))
-        useDefaultFooter = false;
-
-    const promise = message.channel.send({ embeds: [embed(title, content, color, useDefaultFooter, customFooter)] })
-        .then((botMessage) => handleMessageDelete(botMessage))
-        .catch((err) => handleError(err));
-
-    return promise;
-}
 /**
  * @param {Discord.Message} message Message object, needed to be able to handle message deletion correctly.
  * @param {Discord.MessageEmbed | string} object A string or MessageEmbed object to be sent to the channel.
@@ -114,6 +92,5 @@ async function sendMessage(message, object, autoDelayMultiplier = 1) {
 
 module.exports = {
     parseError, handleError,
-    handleMessageDelete,
-    embed, sendEmbedMessage, sendMessage,
+    embed, sendMessage,
 };

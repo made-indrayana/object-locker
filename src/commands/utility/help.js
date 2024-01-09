@@ -1,18 +1,25 @@
 const { prefix, errorTitle, helpTitle, defaultColor } = require('../../../config.json');
-const { sendMessage, sendEmbedMessage, handleMessageDelete } = require('../../utility/handler');
 const Discord = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const ignoreCommands = ['cls', 'help', 'ping', 'jolott'];
+const wait = require('node:timers/promises').setTimeout;
+
 
 const delayMultiplier = 6;
 
 
 module.exports = {
-    name: 'help',
-    description: 'List all of my commands or info about a specific command.',
+    data: new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('List all of my commands or info about a specific command.')
+        .addStringOption(option =>
+            option.setName('command')
+                .setDescription('Command to display the help of')
+                .setRequired(false)),
     aliases: ['commands'],
     usage: ['[command name]'],
     guildOnly: false,
-    execute(message, args) {
+    execute(interaction) {
         const { commands } = message.client;
         const helpEmbed = new Discord.MessageEmbed();
 
