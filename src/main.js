@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
+const { logError } = require('./utility/log');
 
 // Discord
 const Discord = require('discord.js');
@@ -41,5 +42,8 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args));
 
 }
+
+process.on('unhandledRejection', (err) => logError(`Unhandled rejection: ${err?.stack ?? err}`));
+client.on(Discord.Events.Error, (err) => logError(`Client error: ${err.stack ?? err}`));
 
 client.login(process.env.DISCORD_TOKEN);

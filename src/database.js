@@ -1,11 +1,17 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 const { Sequelize, Model, DataTypes } = require('sequelize');
 const { log } = require('./utility/log');
+
+// DATABASE_PATH lets the SQLite file live on a persistent volume; it defaults to ./database.sqlite.
+const storage = path.resolve(process.env.DATABASE_PATH || 'database.sqlite');
+fs.mkdirSync(path.dirname(storage), { recursive: true });
 
 const instance = new Sequelize (
     {
         dialect: 'sqlite',
-        storage: 'database.sqlite',
+        storage,
     },
 );
 
@@ -54,14 +60,15 @@ GuildRegistration.init(
     },
 );
 
-async function validateDatabase(database) {
+/**
+ * Connects to the database and creates missing tables. Rejects if either step fails.
+ */
+async function validateDatabase() {
 
-    await instance.authenticate(database)
-        .then(log('Database authenticated successfully.'))
-        .catch((err) => log(err, 'red'));
-    await database.sync({})
-        .then(log('Database synced successfully.'))
-        .catch((err) => log(err, 'red'));
+    await instance.authenticate();
+    log('Database authenticated successfully.');
+    await instance.sync();
+    log('Database synced successfully.');
 
 }
 

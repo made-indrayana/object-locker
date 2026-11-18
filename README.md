@@ -31,6 +31,6 @@ Requires Node 22 or newer.
 1. `npm install`
 2. Create a `.env` with `DISCORD_TOKEN` and `CLIENT_ID` (plus `GUILD_ID` for development deploys).
 3. Register the slash commands: `npm run deploy-cmd` (only in the `GUILD_ID` guild, instant) or `npm run deploy-cmd:global` (every guild). Pick one, or commands show up twice. Re-run after changing a command's definition.
-4. `npm start` (or `npm run dev` for auto-restart). Locks are stored in `database.sqlite` in the working directory, so keep it on persistent storage.
+4. `npm start` (or `npm run dev` for auto-restart). Locks are stored in `database.sqlite` in the working directory. Set `DATABASE_PATH` in `.env` (e.g. `/data/locks.sqlite`) to put it on a persistent volume; missing folders are created.
 
 The bot only needs the `Guilds` gateway intent, so no privileged intents have to be enabled in the developer portal. It needs the View Channel, Send Messages and Embed Links permissions in the channels you use it in.

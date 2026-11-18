@@ -26,6 +26,8 @@ module.exports = {
             return;
         }
 
+        await interaction.deferReply();
+
         const lockMessages = [];
         const errMessages = [];
 
@@ -58,7 +60,7 @@ module.exports = {
         if (errMessages.length > 0)
             embeds.push(embed(errorTitle, errMessages.join('\n'), 'error'));
 
-        await interaction.reply({ embeds });
+        await interaction.editReply({ embeds });
         autoDeleteReply(interaction);
         await lockstatus.postChannelStatus(interaction);
     },

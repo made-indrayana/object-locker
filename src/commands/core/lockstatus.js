@@ -80,16 +80,17 @@ module.exports = {
                 .setRequired(false)),
     postChannelStatus,
     async execute(interaction) {
-        if (interaction.options.getBoolean('server') ?? false) {
-            const serverEmbed = await buildStatusEmbed(interaction.guild.id, null, serverFooter);
-            await interaction.reply({ embeds: [serverEmbed], flags: MessageFlags.Ephemeral });
-            return;
-        }
+        const serverWide = interaction.options.getBoolean('server') ?? false;
+        await interaction.deferReply(serverWide ? { flags: MessageFlags.Ephemeral } : {});
 
-        const channelEmbed = await buildStatusEmbed(interaction.guild.id, interaction.channel.id, channelFooter);
-        await interaction.reply({ embeds: [channelEmbed] });
+        const statusEmbed = serverWide
+            ? await buildStatusEmbed(interaction.guild.id, null, serverFooter)
+            : await buildStatusEmbed(interaction.guild.id, interaction.channel.id, channelFooter);
+        const message = await interaction.editReply({ embeds: [statusEmbed] });
+
+        if (serverWide)
+            return;
         try {
-            const message = await interaction.fetchReply();
             await replaceStatusMessage(interaction.guild, interaction.channel, message.id);
         }
         catch (err) {

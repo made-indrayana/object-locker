@@ -57,11 +57,13 @@ module.exports = {
     async execute(interaction) {
         const objects = parseObjectNames(interaction.options.getString('objects'));
 
+        await interaction.deferReply();
+
         const embeds = objects.length === 0
             ? await unlockAll(interaction)
             : await unlockObjects(interaction, objects);
 
-        await interaction.reply({ embeds });
+        await interaction.editReply({ embeds });
         autoDeleteReply(interaction);
         await lockstatus.postChannelStatus(interaction);
     },
