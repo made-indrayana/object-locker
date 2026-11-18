@@ -9,12 +9,12 @@ Object Locker is a Discord bot (discord.js v14, Sequelize + SQLite) that lets te
 ## Commands
 
 - `npm install`
-- `npm start` — runs `nodemon .` (entry: `src/main.js`)
-- `npm run deploy-cmd` — registers slash commands to a single guild (`src/deploy-commands.js`; uses `Routes.applicationGuildCommands`). `src/delete-commands.js` removes them.
-- Lint: `npx eslint src` (config in `.eslintrc.json`: 4-space indent, single quotes, semicolons, stroustrup braces, `curly: multi-or-nest` i.e. no braces on single-statement bodies, no inline comments, comma-dangle on multiline)
+- `npm start` runs `node .` (entry: `src/main.js`); `npm run dev` runs it under nodemon.
+- `npm run deploy-cmd` registers slash commands to the single guild in `GUILD_ID` (instant, for development). `npm run deploy-cmd:global` registers them for every guild. Use one or the other, or commands appear twice. `npm run delete-cmd` removes both sets. Re-run after changing a command's `data`.
+- `npm run lint` (`eslint src`; config in `.eslintrc.json`: 4-space indent, single quotes, semicolons, stroustrup braces, `curly: multi-or-nest` i.e. no braces on single-statement bodies, no inline comments, comma-dangle on multiline)
 - No tests exist (`npm test` is a stub).
-- Requires a `.env` with `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`. The SQLite file `database.sqlite` is created in the cwd and gitignored. `config.json` holds non-secret settings (colors, titles, `autoDeleteDelay`, legacy `prefix`).
-- `.nvmrc` says Node 16.9.0 but `package.json` engines says 18.18.2 (discord.js 14 needs Node 16.11+); use Node 18.
+- Requires a `.env` with `DISCORD_TOKEN`, `CLIENT_ID`, and `GUILD_ID` (guild deploys and `delete-cmd` only). The SQLite file `database.sqlite` is created in the cwd and gitignored. `config.json` holds non-secret settings (colors, `errorTitle`/`warningTitle`, `autoDeleteDelay`).
+- Node 22+ (`.nvmrc`, `engines`).
 
 ## Architecture
 
@@ -25,7 +25,7 @@ Object Locker is a Discord bot (discord.js v14, Sequelize + SQLite) that lets te
 
 ## Slash-command port
 
-The v12 prefix commands (`!lock`) have been ported to discord.js v14 slash commands. Still open: privileged intents in `main.js` (`MessageContent`, `GuildMembers` are no longer needed), guild-only command deployment in `deploy-commands.js`, the stale `prefix`/`helpTitle` keys in `config.json`, and the README/invite link, which still describe the `!` commands and `scope=bot` only. `ephemeral: true` in `interaction-create.js` is deprecated in favor of `flags: MessageFlags.Ephemeral`.
+The v12 prefix commands (`!lock`) have been ported to discord.js v14 slash commands, and the client only requests the `Guilds` intent (no privileged intents). The invite needs `scope=bot applications.commands`; the bot needs View Channel, Send Messages and Embed Links. Still open: `validateDatabase` in `database.js` logs before its queries finish, there is no `unhandledRejection` handler, and the README screenshots still show the old `!` commands.
 
 Conventions for commands (`lock.js`, `unlock.js`, `lockstatus.js` are the reference):
 - Export `data` (with `.setContexts(InteractionContextType.Guild)` for guild-only commands) and `execute(interaction)`.

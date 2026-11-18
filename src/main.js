@@ -6,13 +6,7 @@ const path = require('path');
 // Discord
 const Discord = require('discord.js');
 const client = new Discord.Client({
-    intents: [
-        Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.GuildMembers,
-        Discord.GatewayIntentBits.GuildMessages,
-        Discord.GatewayIntentBits.MessageContent,
-        Discord.GatewayIntentBits.DirectMessages,
-    ],
+    intents: [Discord.GatewayIntentBits.Guilds],
 });
 client.commands = new Discord.Collection();
 

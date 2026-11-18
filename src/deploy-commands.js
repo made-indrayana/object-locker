@@ -3,16 +3,18 @@ const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
+// Usage: node src/deploy-commands.js [--global]
+// Without --global the commands are registered only in the guild from GUILD_ID (instant, for development).
+// With --global they are registered for every guild the bot is in. Don't use both for the same bot, or users will see each command twice.
+const isGlobal = process.argv.includes('--global');
+
 const commands = [];
-// Grab all the command folders from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-    // Grab all the command files from the commands directory you created earlier
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
@@ -25,26 +27,21 @@ for (const folder of commandFolders) {
     }
 }
 
-// Construct and prepare an instance of the REST module
 const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
-// and deploy your commands!
 (async () => {
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+        console.log(`Started refreshing ${commands.length} application (/) commands (${isGlobal ? 'global' : 'guild only'}).`);
 
-        // The put method is used to fully refresh all commands in the guild with the current set
-        // For global commands to Routes.applicationCommands(clientId)
-        // For deployment only in one guild commands to Routes.applicationGuildCommands(clientId, guildId)
-        const data = await rest.put(
-            Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-            { body: commands },
-        );
+        const route = isGlobal
+            ? Routes.applicationCommands(process.env.CLIENT_ID)
+            : Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID);
+        const data = await rest.put(route, { body: commands });
 
         console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     }
     catch (error) {
-        // And of course, make sure you catch and log any errors!
         console.error(error);
+        process.exitCode = 1;
     }
 })();

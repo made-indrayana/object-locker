@@ -4,13 +4,16 @@
   "description": "Object-Locking Discord Bot for Game Developer, especially those who are using git and doesn't have the 'lock/checkout' function of SVN/Perforce.",
   "main": "src/main.js",
   "engines": {
-    "node": "v18.18.2",
-    "npm": "9.8.1"
+    "node": ">=22"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "dev": "nodemon .",
+    "lint": "eslint src",
     "deploy-cmd": "node src/deploy-commands.js",
-    "start": "nodemon ."
+    "deploy-cmd:global": "node src/deploy-commands.js --global",
+    "delete-cmd": "node src/delete-commands.js"
   },
   "author": "Made Indrayana",
   "license": "MIT",
