@@ -24,7 +24,7 @@
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.4",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
