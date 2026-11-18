@@ -28,6 +28,7 @@ Object Locker is a Discord bot (discord.js v14, Sequelize + SQLite) that lets te
 The v12 prefix commands (`!lock`) have been ported to discord.js v14 slash commands, and the client only requests the `Guilds` intent (no privileged intents). The invite needs `scope=bot applications.commands`; the bot needs View Channel, Send Messages and Embed Links. Only the README screenshots (hosted on the `imgs` branch) still show the old `!` commands.
 
 Conventions for commands (`lock.js`, `unlock.js`, `lockstatus.js` are the reference):
+- Load the database lazily (`getDatabase()`), never at module top level: `deploy-commands.js` requires every command file and must work without the sqlite3 binary.
 - Export `data` (with `.setContexts(InteractionContextType.Guild)` for guild-only commands) and `execute(interaction)`.
 - Validate input first (ephemeral reply on bad input), then `deferReply()` and finish with `editReply()`, then call `autoDeleteReply(interaction)` from `utility/handler.js` without awaiting it; replies are removed after `config.autoDeleteDelay`.
 - `lock`/`unlock` finish by calling `lockstatus.postChannelStatus(interaction)`, which posts a persistent status message and deletes the channel's previous one (tracked in `LockStatusMessages`). `/lockstatus` does the same through its own reply; `/lockstatus server:true` is ephemeral and not tracked.

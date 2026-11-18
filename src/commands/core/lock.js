@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, InteractionContextType, MessageFlags } = require('discord.js');
 const { errorTitle } = require('../../../config.json');
-const database = require('../../database');
+// Loaded on first use so deploy-commands.js can read command definitions without opening the database.
+const getDatabase = () => require('../../database');
 const lockstatus = require('./lockstatus');
 const { embed, handleError, autoDeleteReply, parseObjectNames } = require('../../utility/handler');
 
@@ -33,7 +34,7 @@ module.exports = {
 
         for (const objectName of objects) {
             try {
-                await database.createEntry(
+                await getDatabase().createEntry(
                     interaction.guild.id,
                     interaction.guild.name,
                     interaction.channel.id,

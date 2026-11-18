@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, InteractionContextType } = require('discord.js');
 const { errorTitle } = require('../../../config.json');
-const database = require('../../database');
+// Loaded on first use so deploy-commands.js can read command definitions without opening the database.
+const getDatabase = () => require('../../database');
 const lockstatus = require('./lockstatus');
 const { embed, handleError, autoDeleteReply, parseObjectNames } = require('../../utility/handler');
 
@@ -8,7 +9,7 @@ const commandName = 'unlock';
 
 async function unlockAll(interaction) {
     try {
-        const count = await database.destroyAllEntryFromUser(interaction.guild.id, interaction.channel.id, interaction.user.id);
+        const count = await getDatabase().destroyAllEntryFromUser(interaction.guild.id, interaction.channel.id, interaction.user.id);
         if (count === 0)
             return [embed(errorTitle, 'You currently have no object locked!', 'error')];
         return [embed('Unlocked!', `You have successfully unlocked \`${count}\` ${count > 1 ? 'objects' : 'object'}!`, 'success')];
@@ -25,7 +26,7 @@ async function unlockObjects(interaction, objects) {
 
     for (const objectName of objects) {
         try {
-            const count = await database.destroyEntry(interaction.guild.id, interaction.channel.id, objectName);
+            const count = await getDatabase().destroyEntry(interaction.guild.id, interaction.channel.id, objectName);
             if (count === 0)
                 errMessages.push(`\`${objectName}\` is not locked!`);
             else

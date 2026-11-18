@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, InteractionContextType, MessageFlags } = require('discord.js');
-const database = require('../../database');
+// Loaded on first use so deploy-commands.js can read command definitions without opening the database.
+const getDatabase = () => require('../../database');
 const { embed, handleError } = require('../../utility/handler');
 
 const commandName = 'lockstatus';
@@ -24,7 +25,7 @@ async function buildStatusEmbed(guildId, channelId, footer) {
     if (channelId)
         where.channelID = channelId;
 
-    const results = await database.Entry.findAll({ where, order: [['createdAt', 'ASC']] });
+    const results = await getDatabase().Entry.findAll({ where, order: [['createdAt', 'ASC']] });
 
     let lines;
     if (results.length === 0)
@@ -41,16 +42,16 @@ async function buildStatusEmbed(guildId, channelId, footer) {
  * Remembers the given message as the channel's latest status message and deletes the previous one.
  */
 async function replaceStatusMessage(guild, channel, messageId) {
-    const existing = await database.LockStatusMessages.findOne({
+    const existing = await getDatabase().LockStatusMessages.findOne({
         where: { serverID: guild.id, channelID: channel.id },
     });
 
     if (existing) {
         await channel.messages.delete(existing.messageID).catch((err) => handleError(err));
-        await database.updateLastLockStatusMessage(guild.id, channel.id, messageId);
+        await getDatabase().updateLastLockStatusMessage(guild.id, channel.id, messageId);
     }
     else
-        await database.registerLastLockStatusMessage(guild.id, guild.name, channel.id, channel.name, messageId);
+        await getDatabase().registerLastLockStatusMessage(guild.id, guild.name, channel.id, channel.name, messageId);
 }
 
 /**
