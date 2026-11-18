@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { Sequelize, Model, DataTypes } = require('sequelize');
-const { log, Log } = require('./utility/log');
+const { log } = require('./utility/log');
 
 const instance = new Sequelize (
     {
@@ -138,23 +138,29 @@ async function updateLastLockStatusMessage(serverID, channelID, lockMessageID) {
 
 async function guildRegister(serverID, serverName, serverOwnerID) {
 
-    const promise = await GuildRegistration.create({
-        serverID: serverID,
-        serverName: serverName,
-        serverOwnerID: serverOwnerID,
+    const [registration] = await GuildRegistration.findOrCreate({
+        where: { serverID: serverID },
+        defaults: { serverName: serverName, serverOwnerID: serverOwnerID },
     });
 
-    return promise;
+    return registration;
 }
 
+/**
+ * Removes the guild registration along with every lock and status message belonging to that guild.
+ */
 async function guildDeregister(serverID) {
 
-    const promise = await GuildRegistration.destroy({
-        where: { serverID: serverID },
-    });
+    const where = { where: { serverID: serverID } };
+    const results = await Promise.all([
+        Entry.destroy(where),
+        LockStatusMessages.destroy(where),
+        GuildRegistration.destroy(where),
+    ]);
 
-    return promise;
+    return results;
 }
+
 module.exports = {
     instance,
     Entry, LockStatusMessages,

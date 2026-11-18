@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
+const wait = require('node:timers/promises').setTimeout;
 const config = require('../../config.json');
 const { logError } = require('./log');
 
@@ -29,26 +29,6 @@ function handleError(err) {
     }
 }
 
-/**
- * @param {Discord.Message} message Message object to be deleted.
- * @param {number} timeoutMultiplier Multplies the defined auto delete message's delay.
- */
-// async function handleMessageDelete(message, timeoutMultiplier = 1) {
-//     switch (message.channel.type) {
-//     case'group_dm':
-//     case 'dm': {
-//         const promise = new Promise((resolve) => resolve('Message in DM, will not be deleted.'));
-//         return promise;
-//     }
-//     default: {
-//         await sleep(config.autoDeleteDelay * timeoutMultiplier);
-//         const promise = message.delete()
-//             .catch((err) => handleError(err));
-//         return promise;
-//     }
-//     }
-// }
-
 function getColor(identifier) {
     switch(identifier) {
     case 'default':
@@ -64,33 +44,56 @@ function getColor(identifier) {
     }
 }
 
+/**
+ * @param {string} title Embed title.
+ * @param {string} content Embed description.
+ * @param {string} color One of 'default', 'success', 'warning', 'error'.
+ * @param {boolean} useDefaultFooter Show the "automatically deleted" footer (ignored when customFooter is given).
+ * @param {string | null} customFooter Footer text that takes priority over the default footer.
+ */
 function embed(title, content, color = 'default', useDefaultFooter = true, customFooter = null) {
-    const finalColor = getColor(color);
     const object = new Discord.EmbedBuilder()
         .setTitle(title)
-        .setColor(finalColor)
+        .setColor(getColor(color))
         .setDescription(content);
-    if(useDefaultFooter | customFooter === null | customFooter === '')
-        object.setFooter({ text: `This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.` });
-    else
+    if (customFooter)
         object.setFooter({ text: customFooter });
+    else if (useDefaultFooter)
+        object.setFooter({ text: `This message will be automatically deleted after ${config.autoDeleteDelay / 1000} seconds.` });
     return object;
 }
 
 /**
- * @param {Discord.Message} message Message object, needed to be able to handle message deletion correctly.
- * @param {Discord.MessageEmbed | string} object A string or MessageEmbed object to be sent to the channel.
+ * Deletes the interaction's reply after the configured delay. Do not await it unless you want to block on the delay;
+ * errors (e.g. the reply was already deleted by a user) are handled here.
+ * @param {Discord.ChatInputCommandInteraction} interaction Interaction that has already been replied to.
+ * @param {number} timeoutMultiplier Multiplies the configured auto delete delay.
  */
-async function sendMessage(message, object, autoDelayMultiplier = 1) {
+async function autoDeleteReply(interaction, timeoutMultiplier = 1) {
+    await wait(config.autoDeleteDelay * timeoutMultiplier);
+    try {
+        await interaction.deleteReply();
+    }
+    catch (err) {
+        handleError(err);
+    }
+}
 
-    const promise = message.channel.send(object)
-        .then((botMessage) => handleMessageDelete(botMessage, autoDelayMultiplier))
-        .catch((err) => handleError(err));
-
-    return promise;
+/**
+ * Splits a space separated string into object names, dropping empty entries and case-insensitive duplicates.
+ * @param {string | null} input Raw command option value.
+ * @returns {string[]} Unique object names in the order they were given.
+ */
+function parseObjectNames(input) {
+    const names = new Map();
+    (input ?? '').split(/\s+/).filter(Boolean).forEach((name) => {
+        if (!names.has(name.toLowerCase()))
+            names.set(name.toLowerCase(), name);
+    });
+    return [...names.values()];
 }
 
 module.exports = {
     parseError, handleError,
-    embed, sendMessage,
+    embed, autoDeleteReply, parseObjectNames,
 };

@@ -23,10 +23,13 @@ Object Locker is a Discord bot (discord.js v14, Sequelize + SQLite) that lets te
 - `src/database.js` defines three models (`Entry` = a lock, `LockStatusMessages` = last status message per channel, `GuildRegistration`) plus thin async helper functions; commands call these helpers (or the exported models directly).
 - `src/utility/handler.js` has `embed()` (themed embeds using `config.json` colors) and error handling by Discord error code; `src/utility/log.js` is the logger.
 
-## Migration in progress (important)
+## Slash-command port
 
-The codebase is mid-migration from prefix commands (`!lock`, discord.js v12 `message`/`args`) to slash commands (v14 `interaction`). Files are inconsistent:
-- `lock.js` is migrated (uses `interaction`, but still carries legacy `aliases`/`usage`/`args` fields and a commented-out `lockstatus.execute` call).
-- `lockstatus.js` still uses the old `(message, args)` shape and has no `data`, so `main.js` skips it with a `[WARNING]`; it also imports `handleMessageDelete`, which is commented out/not exported in `handler.js` (as is `sendMessage`'s dependency on it).
-- Large commented-out blocks of the old message handler remain (e.g. in `interaction-create.js`) as migration reference.
-When touching a command, check whether it has been converted yet and follow the `lock.js` slash-command pattern. User-facing replies are auto-deleted after `config.autoDeleteDelay` via `wait` + `interaction.deleteReply()`.
+The v12 prefix commands (`!lock`) have been ported to discord.js v14 slash commands. Still open: privileged intents in `main.js` (`MessageContent`, `GuildMembers` are no longer needed), guild-only command deployment in `deploy-commands.js`, the stale `prefix`/`helpTitle` keys in `config.json`, and the README/invite link, which still describe the `!` commands and `scope=bot` only. `ephemeral: true` in `interaction-create.js` is deprecated in favor of `flags: MessageFlags.Ephemeral`.
+
+Conventions for commands (`lock.js`, `unlock.js`, `lockstatus.js` are the reference):
+- Export `data` (with `.setContexts(InteractionContextType.Guild)` for guild-only commands) and `execute(interaction)`.
+- Reply, then call `autoDeleteReply(interaction)` from `utility/handler.js` without awaiting it; replies are removed after `config.autoDeleteDelay`.
+- `lock`/`unlock` finish by calling `lockstatus.postChannelStatus(interaction)`, which posts a persistent status message and deletes the channel's previous one (tracked in `LockStatusMessages`). `/lockstatus` does the same through its own reply; `/lockstatus server:true` is ephemeral and not tracked.
+- Parse space-separated object names with `parseObjectNames()` (drops empties and case-insensitive duplicates).
+- `guildDeregister` removes the guild's locks, status messages and registration.

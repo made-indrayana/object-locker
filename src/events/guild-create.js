@@ -7,11 +7,21 @@ const { handleError } = require('../utility/handler');
 
 module.exports = {
     name: Events.GuildCreate,
-    once: true,
-    execute(guild) {
-        client.users.fetch(guild.ownerID)
-            .then((user) => user.send(about))
-            .catch((err) => handleError(err));
-        database.guildRegister(guild.id, guild.name, guild.ownerID);
+    async execute(guild) {
+        try {
+            await database.guildRegister(guild.id, guild.name, guild.ownerId);
+        }
+        catch (err) {
+            handleError(err);
+        }
+
+        try {
+            const owner = await guild.client.users.fetch(guild.ownerId);
+            await owner.send({ embeds: [about] });
+        }
+        catch (err) {
+            // The owner may have DMs closed, which is not worth more than a log line.
+            handleError(err);
+        }
     },
 };
