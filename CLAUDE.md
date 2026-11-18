@@ -11,7 +11,7 @@ Object Locker is a Discord bot (discord.js v14, Sequelize + SQLite) that lets te
 - `npm install`
 - `npm start` runs `node .` (entry: `src/main.js`); `npm run dev` runs it under nodemon.
 - `npm run deploy-cmd` registers slash commands to the single guild in `GUILD_ID` (instant, for development). `npm run deploy-cmd:global` registers them for every guild. Use one or the other, or commands appear twice. `npm run delete-cmd` removes both sets. Re-run after changing a command's `data`.
-- `npm run lint` (`eslint src`; config in `.eslintrc.json`: 4-space indent, single quotes, semicolons, stroustrup braces, `curly: multi-or-nest` i.e. no braces on single-statement bodies, no inline comments, comma-dangle on multiline)
+- `npm run lint` (`eslint src`; flat config in `eslint.config.js` (ESLint 10): 4-space indent, single quotes, semicolons, stroustrup braces, `curly: multi-or-nest` i.e. no braces on single-statement bodies, no inline comments, comma-dangle on multiline)
 - No tests exist (`npm test` is a stub).
 - Requires a `.env` with `DISCORD_TOKEN`, `CLIENT_ID`, and `GUILD_ID` (guild deploys and `delete-cmd` only). The SQLite file defaults to `database.sqlite` in the cwd (gitignored); `DATABASE_PATH` overrides it. `config.json` holds non-secret settings (colors, `errorTitle`/`warningTitle`, `autoDeleteDelay`).
 - Node 22+ (`.nvmrc`, `engines`).

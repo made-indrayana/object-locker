@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const { REST, Routes } = require('discord.js');
 
 // Removes every slash command of the bot, both in the guild from GUILD_ID and global ones.
